@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "144691808593",
+    "project_id": "poseperfect-dcbd1",
+    "storage_bucket": "poseperfect-dcbd1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144691808593:android:4e40835db89895e2476b70",
+        "android_client_info": {
+          "package_name": "com.example.poseperfect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOGw5k9vyE4Hdh04XWSvLFPvGjBrwvZ5c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
