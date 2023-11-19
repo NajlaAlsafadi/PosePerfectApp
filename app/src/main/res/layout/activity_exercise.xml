@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/circular"
+        android:max="25" />
+
+    <TextView
+        android:id="@+id/timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/progressBar"
+        android:layout_alignStart="@id/progressBar"
+        android:layout_alignEnd="@id/progressBar"
+        android:layout_alignBottom="@id/progressBar"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF" />
+
+    <com.example.poseperfect.PoseOverlayView
+        android:id="@+id/poseOverlayView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>
