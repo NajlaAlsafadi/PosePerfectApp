@@ -49,12 +49,14 @@ public class RegisterActivity extends AppCompatActivity {
                 String passwordConfirm = passwordConfirmField.getText().toString();
 
                 if (!password.equals(passwordConfirm)) {
-                    Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Passwords do not match",
+                            Toast.LENGTH_SHORT).show();
                 } else {
                     // check if the password is strong
                     String passwordStrength = isPasswordStrong(password);
                     if (!passwordStrength.equals("strong")) {
-                        Toast.makeText(RegisterActivity.this, "Password is not strong. " + passwordStrength, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "Password is not strong. "
+                                + passwordStrength, Toast.LENGTH_SHORT).show();
                     } else {
                         registerUser(email, password);
                     }
