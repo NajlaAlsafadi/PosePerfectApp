@@ -1,4 +1,4 @@
-package com.example.poseperfect;
+package com.example.poseperfect.overlay;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -55,8 +55,15 @@ public class PoseOverlayView extends View {
     }
     private void drawLineBetween(Canvas canvas, PoseLandmark startLandmark, PoseLandmark endLandmark) {
         if (startLandmark != null && endLandmark != null) {
-            canvas.drawLine(startLandmark.getPosition().x, startLandmark.getPosition().y,
-                    endLandmark.getPosition().x, endLandmark.getPosition().y, paint);
+            float widthScale = (float) getWidth() / imageWidth;
+            float heightScale = (float) getHeight() / imageHeight;
+
+            float startX = startLandmark.getPosition().x * widthScale;
+            float startY = startLandmark.getPosition().y * heightScale;
+            float endX = endLandmark.getPosition().x * widthScale;
+            float endY = endLandmark.getPosition().y * heightScale;
+
+            canvas.drawLine(startX, startY, endX, endY, paint);
         }
     }
 }

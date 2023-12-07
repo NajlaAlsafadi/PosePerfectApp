@@ -9,13 +9,13 @@ import androidx.camera.core.ExperimentalGetImage;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 
+import com.example.poseperfect.overlay.PoseOverlayView;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.pose.PoseDetection;
 import com.google.mlkit.vision.pose.PoseDetector;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.PoseLandmark;
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions;
-import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
 
 public class PoseAnalyzer implements ImageAnalysis.Analyzer {
     private PoseDetector poseDetector;
