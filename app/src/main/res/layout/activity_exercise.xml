@@ -30,7 +30,7 @@
         android:textSize="20sp"
         android:textColor="#FFFFFF" />
 
-    <com.example.poseperfect.PoseOverlayView
+    <com.example.poseperfect.overlay.PoseOverlayView
         android:id="@+id/poseOverlayView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

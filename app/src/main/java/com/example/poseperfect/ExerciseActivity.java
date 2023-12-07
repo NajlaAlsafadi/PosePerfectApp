@@ -14,6 +14,7 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.poseperfect.overlay.PoseOverlayView;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.Locale;
@@ -66,8 +67,8 @@ public class ExerciseActivity extends AppCompatActivity {
 
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
-        YogaPose targetPose = new YogaPose(180.0f);
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), new PoseAnalyzer(poseOverlayView, targetPose, textToSpeech));
+       YogaPose targetPose = new YogaPose(180.0f);
+      imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), new PoseAnalyzer(poseOverlayView, targetPose, textToSpeech));
 
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);
     }

@@ -1,4 +1,4 @@
-package com.example.poseperfect;
+package com.example.poseperfect.baseUI;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import com.example.poseperfect.R;
 
 public class MainActivity extends AppCompatActivity {
 
