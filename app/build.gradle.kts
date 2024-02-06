@@ -53,5 +53,7 @@ dependencies {
     implementation ("androidx.camera:camera-lifecycle:1.1.0-alpha05")
     implementation ("androidx.camera:camera-view:1.0.0-alpha27")
     implementation ("com.google.mlkit:pose-detection:17.0.1-beta1")
+    implementation ("me.relex:circleindicator:2.1.6")
+
 
 }
