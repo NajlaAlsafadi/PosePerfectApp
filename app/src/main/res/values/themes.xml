@@ -1,9 +1,49 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.PosePerfect" parent="Theme.Material3.DayNight">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.PosePerfect" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+
+
+
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
+
+
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+
+
+        <item name="cardViewStyle">@style/CustomCardView</item>
+
+
+        <item name="android:textAppearance">@style/CustomTextAppearance</item>
     </style>
 
-    <style name="Theme.PosePerfect" parent="Base.Theme.PosePerfect" />
+    <!-- Style for the Bottom Navigation View -->
+    <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="itemIconTint">@color/bottom_nav_item_color</item>
+        <item name="itemTextColor">@color/bottom_nav_item_color</item>
+    </style>
+
+
+    <style name="CustomCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardBackgroundColor">@color/white</item>
+    </style>
+
+
+    <style name="CustomTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="CustomButton" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">4dp</item>
+
+    </style>
+
+
+
+<style name="Theme.PosePerfect" parent="Base.Theme.PosePerfect" />
 </resources>

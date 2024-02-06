@@ -2,49 +2,56 @@ package com.example.poseperfect.baseUI;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.poseperfect.R;
+import com.google.android.material.tabs.TabLayout;
+
+import me.relex.circleindicator.CircleIndicator;
+import me.relex.circleindicator.CircleIndicator3;
+
 
 public class MainActivity extends AppCompatActivity {
 
     ImageView appLogo;
     TextView welcomeText;
-    ImageView arrowImage;
+
     ProgressBar progressBar;
+    CircleIndicator3 indicator;
+    ViewPager2 viewPager;
+    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button nextButton = findViewById(R.id.nextButton);
+       // progressBar = findViewById(R.id.progressBar);
+        viewPager = findViewById(R.id.viewPager);
+        indicator = findViewById(R.id.pageIndicator);
 
-        appLogo = findViewById(R.id.app_logo);
-        welcomeText = findViewById(R.id.welcome_text);
-        arrowImage = findViewById(R.id.arrow_image);
-        progressBar = findViewById(R.id.progress_bar);
+        ScreenSlidePagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(this);
+        viewPager.setAdapter(pagerAdapter);
 
-        // todo- add colour from my range
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.light_purple));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.light_purple));
 
-        // todo- add some animations
-        Animation topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation);
-        Animation bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation);
+        indicator.setViewPager(viewPager);
+        pagerAdapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
 
-        appLogo.setAnimation(topAnim);
-        welcomeText.setAnimation(bottomAnim);
 
-        arrowImage.setOnClickListener(new View.OnClickListener() {
+
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
+//                progressBar.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }

@@ -2,18 +2,25 @@
     <string name="app_name">PosePerfect</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <!-- Preference Titles -->
+    <string name="welcome_back_with_name">Welcome Back, %1$s!</string>
+
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
 
-    <!-- Messages Preferences -->
+
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
 
-    <!-- Sync Preferences -->
+
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="intro_title">Welcome to PosePerfect!</string>
+    <string name="intro_subtitle">We\'re here to help you improve your yoga practice with real-time feedback on your poses. Get started by setting up your camera and start practicing!</string>
+    <string name="techniques_title">Master your poses</string>
+    <string name="techniques_subtitle">Explore the various yoga poses, learn about correct alignments, and understand the benefits of each pose. Whether you are a beginner or an experienced yogi, you\'ll find helpful advice to enhance your practice.</string>
+    <string name="health_title">Health benefits</string>
+    <string name="health_subtitle">From stress management to improving flexibility and balance, discover how yoga can contribute to your overall wellbeing.</string>
 </resources>
