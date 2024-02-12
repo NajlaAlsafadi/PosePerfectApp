@@ -9,7 +9,7 @@
         android:id="@+id/tvWelcomeBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome Back, Jahnavi..!!"
+        android:text="Welcome Back"
         android:layout_margin="16dp"
         android:textSize="18sp"
         android:textColor="#000" />
