@@ -8,6 +8,8 @@
     <EditText
         android:id="@+id/email"
         android:layout_width="0dp"
+        android:drawableStart="@drawable/ic_email"
+        android:drawablePadding="10dp"
         android:layout_height="wrap_content"
         app:layout_constraintWidth_percent=".8"
         app:layout_constraintVertical_bias=".3"
@@ -25,7 +27,10 @@
 
     <EditText
         android:id="@+id/password"
+        android:drawableStart="@drawable/ic_password"
+        android:drawablePadding="10dp"
         android:layout_width="0dp"
+        android:inputType="textPassword"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_text_bg"
         android:hint="Password"
@@ -57,6 +62,17 @@
         app:layout_constraintWidth_percent=".8"
 
         />
+
+    <CheckBox
+        android:id="@+id/showPass"
+        android:layout_width="168dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="3dp"
+        android:text="Show Password"
+        android:textStyle="italic"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/password"
+        app:layout_constraintTop_toBottomOf="@id/password" />
 
     <TextView
         android:id="@+id/forgetPass"
