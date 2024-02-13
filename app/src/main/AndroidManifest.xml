@@ -39,6 +39,9 @@
             android:name=".baseUI.RegisterActivity"
             android:screenOrientation="portrait"/>
         <activity
+            android:name=".baseUI.SuccessResetPassActivity"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".baseUI.ResetPassActivity"
             android:screenOrientation="portrait"/>
         <activity

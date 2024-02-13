@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager viewpager;
     Context context;
-    FloatingActionButton google;
+
     float v=0;
 
 
@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = getIntent();
         tabLayout = findViewById(R.id.tab_layout);
         viewpager = findViewById(R.id.view_pager);
-        google = findViewById(R.id.fab_google);
+
         tabLayout.addTab(tabLayout.newTab().setText("Login"));
         tabLayout.addTab(tabLayout.newTab().setText("Signup"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -76,12 +76,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        google.setTranslationY(300);
+       
         tabLayout.setTranslationY(300);
 
-        google.setAlpha(v);
+
         tabLayout.setAlpha(v);
-        google.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
+
         tabLayout.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(100).start();
 
 

@@ -24,5 +24,5 @@
     <string name="health_title">Health benefits</string>
     <string name="health_subtitle">From stress management to improving flexibility and balance, discover how yoga can contribute to your overall wellbeing.</string>
     <string name="forget_pass">Provide your account email that you want to reset the password!\n</string>
-    <string name="reset_success">Please check your email for instructions!</string>
+    <string name="reset_success">Please check your email for instructions! (Make sure to check spam)</string>
 </resources>
