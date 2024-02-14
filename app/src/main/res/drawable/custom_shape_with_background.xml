@@ -1,0 +1,7 @@
+<!-- res/drawable/background_with_shape.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <color android:color="@color/light_purple"/>
+    </item>
+    <item android:drawable="@drawable/vector"/>
+</layer-list>
