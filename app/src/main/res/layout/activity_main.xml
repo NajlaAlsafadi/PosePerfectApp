@@ -9,7 +9,7 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="492dp"
+        android:layout_height="531dp"
         android:layout_above="@id/pageIndicator"
         android:layout_marginBottom="1dp"
         android:padding="16dp" />
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="59dp"
         android:layout_above="@id/nextButton"
-        android:layout_marginBottom="79dp" />
+        android:layout_marginBottom="42dp" />
 
     <Button
         android:id="@+id/nextButton"

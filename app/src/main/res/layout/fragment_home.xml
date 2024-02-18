@@ -1,18 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".homeNav.HomeFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".homeNav.HomeFragment"
+    android:background="@drawable/login_background">
 
-    <!-- Add your UI elements here -->
+<com.makeramen.roundedimageview.RoundedImageView
+    android:id="@+id/imageProfile"
+    android:layout_width="@dimen/_32sdp"
+    android:layout_height="@dimen/_32sdp"
+    android:layout_marginStart="@dimen/_16sdp"
+    android:layout_marginTop="@dimen/_16sdp"
+    android:scaleType="centerCrop"
+    android:src="@drawable/ic_profile"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:riv_border_color="@color/colorPrimary"
+    app:riv_border_width="1dp"
+    app:riv_corner_radius="@dimen/_8sdp" />
+
+    <View
+        android:id="@+id/viewCenterImageProfile"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageProfile"
+        app:layout_constraintStart_toEndOf="@id/imageProfile"
+        app:layout_constraintTop_toTopOf="@id/imageProfile"/>
 
     <TextView
-        android:id="@+id/home_text"
-        android:layout_width="wrap_content"
+        android:id="@+id/daytimemsg"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Welcome to Home Page"
-        android:layout_centerInParent="true"
-        android:textSize="24sp" />
+        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginBottom="4dp"
+        android:includeFontPadding="false"
+        android:text="@string/good_morning"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintBottom_toTopOf="@+id/username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageProfile"
+        app:layout_constraintTop_toTopOf="@id/imageProfile" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:includeFontPadding="false"
+        android:text="@string/username"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/_13ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/imageProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@id/imageProfile"
+        app:layout_constraintTop_toBottomOf="@id/daytimemsg" />
+
+    <TextView
+        android:id="@+id/howToUse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:includeFontPadding="false"
+        android:padding="4dp"
+        android:text="@string/howToUseMessage"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/_16ssp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/viewCenterImageProfile"
+        tools:layout_editor_absoluteX="20dp" />
+
+    <TextView
+        android:id="@+id/descHowTo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:includeFontPadding="false"
+        android:text="@string/howToUseDesc"
+        android:textColor="@color/pale_purple"
+        android:textSize="@dimen/_13ssp"
+        android:textStyle="italic"
+        app:layout_constraintTop_toBottomOf="@id/howToUse"
+        tools:layout_editor_absoluteX="1dp" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/instructionPager"
+        android:layout_width="411dp"
+        android:layout_height="251dp"
+        android:clipToPadding="false"
+        android:padding="@dimen/_16sdp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/descHowTo">
+    </androidx.viewpager.widget.ViewPager>
+
+    <Button
+        android:id="@+id/startExercises"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_bg"
+        android:text="Start Posing Now!"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:drawableStart="@drawable/ic_exercises1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/instructionPager"/>
+
+
+    <TextView
+        android:id="@+id/vids"
+        android:layout_width="409dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="8dp"
+        android:includeFontPadding="false"
+        android:padding="4dp"
+        android:text="@string/vidsMssg"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/_16ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/vidsDesc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/startExercises" />
+
+    <TextView
+        android:id="@+id/vidsDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:includeFontPadding="false"
+        android:text="@string/vidsDesc"
+        android:textColor="@color/pale_purple"
+        android:textSize="@dimen/_13ssp"
+        android:textStyle="italic"
+        app:layout_constraintTop_toBottomOf="@id/vids"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <HorizontalScrollView
+        android:id="@+id/VideosScroll"
+        android:layout_width="407dp"
+        android:layout_height="220dp"
+        android:clipToPadding="false"
+        android:padding="@dimen/_16sdp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vidsDesc"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:id="@+id/VideosContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <include layout="@layout/yoga_content_1" />
+
+            <include layout="@layout/yoga_content_2" />
+
+            <include layout="@layout/yoga_content_3" />
+
+            <include layout="@layout/yoga_content_4" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
