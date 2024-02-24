@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".homeNav.HomeFragment"
-    android:background="@drawable/login_background">
+    android:background="@drawable/gradient_background"
+    >
 
 <com.makeramen.roundedimageview.RoundedImageView
     android:id="@+id/imageProfile"
@@ -81,7 +82,7 @@
         android:layout_marginTop="4dp"
         android:includeFontPadding="false"
         android:text="@string/howToUseDesc"
-        android:textColor="@color/pale_purple"
+        android:textColor="#464B9B"
         android:textSize="@dimen/_13ssp"
         android:textStyle="italic"
         app:layout_constraintTop_toBottomOf="@id/howToUse"
@@ -101,17 +102,18 @@
 
     <Button
         android:id="@+id/startExercises"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_bg"
-        android:text="Start Posing Now!"
-        android:textColor="@color/white"
-        android:textSize="16sp"
+        style="@style/CustomButton"
+        android:layout_width="369dp"
+        android:layout_height="44dp"
+        android:backgroundTint="@color/white"
         android:drawableStart="@drawable/ic_exercises1"
+        android:text="Start Posing Now!"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/instructionPager"/>
+        app:layout_constraintTop_toBottomOf="@id/instructionPager" />
 
 
     <TextView

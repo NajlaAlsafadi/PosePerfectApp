@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
+    <TextView
+        android:id="@+id/password_details"
+        android:layout_width="314dp"
+        android:layout_height="31dp"
+        android:layout_marginTop="8dp"
+        android:gravity="left"
+        android:text="*Password must be at least 8 characters, include at least one letter, and at least one number."
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.678"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/confirm_password" />
+
     <EditText
         android:id="@+id/email"
         android:layout_width="0dp"
+        android:drawableStart="@drawable/ic_email"
+        android:drawablePadding="10dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/edit_text_bg"
+        app:layout_constraintHorizontal_bias=".5"
+        android:textSize="16sp"
         android:hint="Email"
+        android:background="@drawable/edit_text_bg"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,6 +42,8 @@
 
     <EditText
         android:id="@+id/username"
+        android:drawableStart="@drawable/ic_profile"
+        android:drawablePadding="10dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_text_bg"
@@ -41,10 +61,12 @@
 
     <EditText
         android:id="@+id/confirm_password"
+        android:drawableStart="@drawable/ic_password"
+        android:drawablePadding="10dp"
         android:layout_width="0dp"
+        android:inputType="textPassword"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_text_bg"
-        android:inputType="textPassword"
         android:hint="Confirm Password"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
@@ -59,10 +81,12 @@
 
     <EditText
         android:id="@+id/password"
+        android:drawableStart="@drawable/ic_password"
+        android:drawablePadding="10dp"
         android:layout_width="0dp"
+        android:inputType="textPassword"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_text_bg"
-        android:inputType="textPassword"
         android:hint="Password"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
@@ -77,19 +101,19 @@
 
     <Button
         android:id="@+id/signup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_bg"
+        style="@style/CustomButton"
+        android:layout_width="302dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="56dp"
+        android:backgroundTint="#4d5087"
         android:text="Signup"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.568"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.77"
-        app:layout_constraintWidth_percent=".8" />
+        app:layout_constraintTop_toBottomOf="@+id/password_details" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

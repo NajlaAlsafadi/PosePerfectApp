@@ -57,6 +57,12 @@ dependencies {
     implementation ("com.intuit.sdp:sdp-android:1.1.0")
     implementation("com.intuit.ssp:ssp-android:1.1.0")
     implementation("com.makeramen:roundedimageview:2.3.0")
+    implementation ("com.airbnb.android:lottie:3.7.0")
+    implementation ("com.google.firebase:firebase-storage-ktx:19.2.2")
+    implementation ("androidx.activity:activity-ktx:1.2.3")
+    implementation ("androidx.fragment:fragment-ktx:1.3.6")
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
 
 

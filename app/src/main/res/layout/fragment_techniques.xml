@@ -14,15 +14,19 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
-        <ImageView
+        <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/imageView_techniques"
             android:layout_width="357dp"
             android:layout_height="248dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/yoga1"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
 
         <TextView
             android:id="@+id/textView_title_techniques"

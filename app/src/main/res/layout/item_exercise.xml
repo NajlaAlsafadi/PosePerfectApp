@@ -1,13 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="24dp"
+    android:backgroundTint="@color/white">
 
-    <TextView
-        android:id="@+id/exercise_name"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        android:padding="8dp">
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/exercise_image"
+            android:layout_width="145dp"
+            android:layout_height="110dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:paddingBottom="5dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_exercises" />
+
+        <TextView
+            android:id="@+id/exercise_name"
+            android:layout_width="201dp"
+            android:layout_height="60dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="9dp"
+            android:layout_toLeftOf="@id/exercise_image"
+            android:gravity="left"
+            android:text="Exercise Name"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/exercise_category"
+            android:layout_width="201dp"
+            android:layout_height="20dp"
+            android:layout_alignBottom="@id/exercise_difficulty"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="9dp"
+            android:layout_marginBottom="-22dp"
+            android:layout_toLeftOf="@id/exercise_image"
+            android:gravity="left"
+            android:text="Category:"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp"
+            />
+        <TextView
+            android:id="@+id/exercise_difficulty"
+            android:layout_width="201dp"
+            android:layout_height="20dp"
+            android:layout_alignBottom="@id/exercise_name"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="9dp"
+            android:layout_marginBottom="-22dp"
+            android:layout_toLeftOf="@id/exercise_image"
+            android:gravity="left"
+            android:text="Difficulty:"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp"
+            />
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

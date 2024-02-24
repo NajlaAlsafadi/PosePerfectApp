@@ -28,11 +28,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="81dp"
-        android:backgroundTint="@color/colorPrimary"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Get Started"
+        android:backgroundTint="#4d5087"
+        android:textSize="16sp"
+        android:textStyle="bold"
         android:textColor="@android:color/white" />
 
 </RelativeLayout>
