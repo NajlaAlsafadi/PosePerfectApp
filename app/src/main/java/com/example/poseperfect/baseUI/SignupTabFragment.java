@@ -28,7 +28,7 @@ public class SignupTabFragment  extends Fragment {
     EditText email;
     EditText password;
     EditText confirmPass;
-
+    TextView password_details;
     EditText username;
     Button signup;
     private FirebaseAuth firebaseAuth;
@@ -38,6 +38,7 @@ public class SignupTabFragment  extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.signup_tab_fragment, container, false);
+        password_details = root.findViewById(R.id.password_details);
         email = root.findViewById(R.id.email);
         password = root.findViewById(R.id.password);
         confirmPass = root.findViewById(R.id.confirm_password);
@@ -47,12 +48,14 @@ public class SignupTabFragment  extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         email.setTranslationX(800);
+        password_details.setTranslationX(800);
         password.setTranslationX(800);
         confirmPass.setTranslationX(800);
         username.setTranslationX(800);
         signup.setTranslationX(800);
 
         email.setAlpha(v);
+        password_details.setAlpha(v);
         password.setAlpha(v);
         confirmPass.setAlpha(v);
         username.setAlpha(v);
@@ -61,9 +64,11 @@ public class SignupTabFragment  extends Fragment {
 
 
         email.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(300).start();
+
         username.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(500).start();
         password.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(700).start();
         confirmPass.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(700).start();
+        password_details.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(800).start();
         signup.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(900).start();
         signup.setOnClickListener(new View.OnClickListener() {
             @Override

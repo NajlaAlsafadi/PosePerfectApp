@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class HomeActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private TextView tvWelcomeBack;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +25,9 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         mAuth = FirebaseAuth.getInstance();
-        tvWelcomeBack = findViewById(R.id.tvWelcomeBack);
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
 
-        updateWelcomeText();
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -59,17 +58,26 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void updateWelcomeText() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String welcomeText = getString(R.string.welcome_back_with_name, currentUser.getDisplayName());
-            tvWelcomeBack.setText(welcomeText);
-        }
+    public void selectExerciseTab() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_exercise);
     }
 
     @Override
     public void onBackPressed() {
-        // Handle back press in relation to your fragments or bottom navigation view
-        super.onBackPressed();
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+        if (!(currentFragment instanceof HomeFragment)) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .commit();
+        } else {
+
+            super.onBackPressed();
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.poseperfect.baseUI;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 
 import android.widget.Button;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.poseperfect.R;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         indicator = findViewById(R.id.pageIndicator);
 
+
         ScreenSlidePagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
 
@@ -46,7 +50,18 @@ public class MainActivity extends AppCompatActivity {
         pagerAdapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
 
 
+        viewPager.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
 
+                int space = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+
+                if (parent.getChildAdapterPosition(view) != 0) {
+                    outRect.left = space;
+                }
+            }
+        });
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -25,4 +25,21 @@
     <string name="health_subtitle">From stress management to improving flexibility and balance, discover how yoga can contribute to your overall wellbeing.</string>
     <string name="forget_pass">Provide your account email that you want to reset the password!\n</string>
     <string name="reset_success">Please check your email for instructions! (Make sure to check spam)</string>
+    <string name="good_morning">Good Morning!</string>
+    <string name="good_afternoon">Good Afternoon!</string>
+    <string name="good_evening">Good Evening!</string>
+
+    <string name="username">Username</string>
+    <string name="howToUseMessage">How To Use</string>
+    <string name="howToUseDesc">Checkout the Below Cards for Instructions on How to Use our App in order to Check your Pose.</string>
+    <string name="vidsMssg">More Yoga Content...</string>
+    <string name="vidsDesc">Checkout some more content on How to Strike the Perfect Pose!</string>
+    <string name="step1">Select a Pose to begin checking your Accuracy\n</string>
+    <string name="step2">And Let the Countdown Begin!</string>
+    <string name="step6">Hit the</string>
+    <string name="step3">Position the Camera approx 1.5m away</string>
+    <string name="step7">Strike a Pose!</string>
+    <string name="step8"><![CDATA[Wait for Verbal & on Screen Feedback and]]></string>
+    <string name="step4">Hold Until Timer Finishes</string>
+    <string name="step5">Then you will be redirected towards your Result.</string>
 </resources>
