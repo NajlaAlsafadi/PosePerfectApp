@@ -2,10 +2,13 @@ package com.example.poseperfect;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,11 +29,9 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
     private RecyclerView recyclerView;
     private ExerciseAdapter exerciseAdapter;
 
-    private List<Exercise> exercises = Arrays.asList(
-            new Exercise("T-Pose", R.drawable.t_pose, "Beginner", "Standing"),
-            new Exercise("Bridge", R.drawable.bridge, "Intermediate", "Supine / Backbend"),
-            new Exercise("Boat", R.drawable.boat, "Intermediate", "Seated / Balancing")
-    );
+    private List<Exercise> exercises;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,6 +40,11 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        exercises = Arrays.asList(
+                new Exercise("T-Pose", getResources().getString(R.string.T_Pose_desc), getResources().getString(R.string.T_Pose_health), R.drawable.t_pose, "Beginner", "Standing", "https://youtu.be/ToXlJxuFLmU?si=vESk5CNaoA4bcWcU"),
+                new Exercise("Bridge", getResources().getString(R.string.Bridge_desc), getResources().getString(R.string.Bridge_health), R.drawable.bridge, "Intermediate", "Supine / Backbend", "https://youtu.be/XUcAuYd7VU0?si=dOrUm-HD20ST8FrQ"),
+                new Exercise("Boat", getResources().getString(R.string.Boat_desc), getResources().getString(R.string.Boat_health), R.drawable.boat, "Intermediate", "Seated / Balancing", "https://youtu.be/QVEINjrYUPU?si=SfFzigx1JKQwYqAy")
+        );
         exerciseAdapter = new ExerciseAdapter(exercises, new ExerciseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Exercise item) {
@@ -58,13 +64,15 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                // Handle option 1
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse(item.getYoutubeUrl()));
+                                startActivity(intent);
                                 break;
                             case 1:
-                                // Handle option 2
+                                showScrollableDialog("Description", item.getDescription());
                                 break;
                             case 2:
-                                // Handle option 3
+                                showScrollableDialog("Health Benefits", item.getHealthBenefits());
                                 break;
                         }
                     }
@@ -73,9 +81,11 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
                 dialog.show();
             }
         });
+
         recyclerView.setAdapter(exerciseAdapter);
         ChipGroup chipGroup = view.findViewById(R.id.chip_group);
         chipGroup.setOnCheckedChangeListener(this);
+
         return view;
     }
     @Override
@@ -87,5 +97,26 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
         } else if (checkedId == R.id.chip_intermediate) {
             exerciseAdapter.filter("Intermediate");
         }
+    }
+    private void showScrollableDialog(String title, String content) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(title);
+
+        final ScrollView scrollView = new ScrollView(getContext());
+        final TextView textView = new TextView(getContext());
+        textView.setPadding(16, 16, 16, 16);
+        textView.setText(content);
+        scrollView.addView(textView);
+        builder.setView(scrollView);
+
+        builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
