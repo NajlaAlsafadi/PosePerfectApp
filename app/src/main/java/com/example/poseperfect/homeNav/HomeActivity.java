@@ -1,5 +1,6 @@
 package com.example.poseperfect.homeNav;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -7,6 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.poseperfect.ExerciseFragment;
 import com.example.poseperfect.R;
@@ -63,9 +66,9 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_exercise);
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
@@ -77,7 +80,7 @@ public class HomeActivity extends AppCompatActivity {
                     .commit();
         } else {
 
-            super.onBackPressed();
+            //DO NOTHING
         }
     }
 }

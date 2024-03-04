@@ -42,4 +42,10 @@
     <string name="step8"><![CDATA[Wait for Verbal & on Screen Feedback and]]></string>
     <string name="step4">Hold Until Timer Finishes</string>
     <string name="step5">Then you will be redirected towards your Result.</string>
+    <string name="T_Pose_health">☑ Improves balance.</string>
+    <string name="Bridge_health">☑ Stretches the chest, neck, and spine.\n☑ Stimulates abdominal organs, lungs, and thyroids.\n☑ Improves digestion.\n☑ Relieves menstrual discomfort when done supported.\n☑ Reduces anxiety, fatigue, backache, headache, and insomnia. "</string>
+    <string name="Boat_health">☑ Strengthens the abdomen, hip flexors, and spine. \n☑ Stimulates the kidneys, thyroid and intestines. \n☑ Helps relieve stress. \n☑ Improves digestion.</string>
+    <string name="Boat_desc">1. From a seated position the feet are lifted up so that the thighs are angled about 45-50 degrees relative to the earth. \n2.The legs are straight. \n3. The tailbone is lengthened into the earth and the pubis pulls toward the navel. \n4. The shoulder blades are spread across the back and the hands reach straight forward making the arms are parallel to the earth. \n5. The chin is tipped slightly toward the sternum so that the base of the skull lifts lightly away from the back of the neck. \n6. Gaze is forward.</string>
+    <string name="Bridge_desc">1. From a supine position, on your back, the hips are pressed up with the heels of the feet rooted into the earth close to the sits bones. \n2. The toes are actively lifted and the pelvis tucked. \n3. The thighs are parallel to the earth and the fingers are interlaced under the body with the ribcage lifted and the heart open. \n4. The back of the neck rests on the earth. \n5. The gaze is to the sky.</string>
+    <string name="T_Pose_desc">1. Both arms reach outward with a light stretch. \n2. Arms should be 90 degrees to body.\n3. The knees, hips and shoulders aligned. \n4. Feet planted and forward.\n5. The gaze is forward.</string>
 </resources>
