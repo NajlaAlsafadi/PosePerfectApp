@@ -1,4 +1,4 @@
-package com.example.poseperfect;
+package com.example.poseperfect.homeNav;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.poseperfect.homeNav.Exercise;
+import com.example.poseperfect.R;
 
 import java.util.ArrayList;
 import java.util.List;

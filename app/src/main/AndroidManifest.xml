@@ -47,7 +47,8 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".ExerciseActivity" />
-
+        <activity
+            android:name=".PostPoseActivity" />
     </application>
 
 </manifest>
