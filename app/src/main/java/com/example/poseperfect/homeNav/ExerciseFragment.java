@@ -1,4 +1,4 @@
-package com.example.poseperfect;
+package com.example.poseperfect.homeNav;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.poseperfect.homeNav.Exercise;
+import com.example.poseperfect.ExerciseActivity;
+import com.example.poseperfect.R;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.Arrays;
@@ -28,6 +28,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
 
     private RecyclerView recyclerView;
     private ExerciseAdapter exerciseAdapter;
+    public static final String POSE_NAME = "pose_name";
 
     private List<Exercise> exercises;
 
@@ -49,7 +50,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
             @Override
             public void onItemClick(Exercise item) {
                 Intent intent = new Intent(getActivity(), ExerciseActivity.class);
-                intent.putExtra("EXERCISE_NAME", item.getName());
+                intent.putExtra(POSE_NAME, item.getName());
                 startActivity(intent);
             }
         }, new ExerciseAdapter.OnItemLongClickListener() {

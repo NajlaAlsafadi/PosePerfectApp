@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
+
+    <TextView
+        android:id="@+id/posename"
+        android:layout_width="199dp"
+        android:layout_height="71dp"
+        android:layout_above="@id/sequenceLayout"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:gravity="center"
+        android:text="posename"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/_20ssp"
+        android:textStyle="bold" />
+
+    <com.transferwise.sequencelayout.SequenceLayout
+        android:id="@+id/sequenceLayout"
+        android:layout_width="353dp"
+        android:layout_height="579dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="31dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="59dp"
+        app:layout_constraintVertical_bias="1.0"
+        app:progressForegroundColor="@color/colorAccent">
+
+
+        <com.transferwise.sequencelayout.SequenceStep
+            android:id="@+id/outcome"
+            android:layout_width="match_parent"
+            android:layout_height="69dp"
+            app:anchor="Outcome"
+            app:subtitle=""
+            app:title="Outcome"
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <com.transferwise.sequencelayout.SequenceStep
+            android:id="@+id/check1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:anchor="First Check"
+            app:subtitle=""
+            app:title="First check"
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
+            tools:visibility="invisible" />
+
+        <com.transferwise.sequencelayout.SequenceStep
+            android:id="@+id/check2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:anchor="Second Check"
+            app:subtitle=""
+            app:title=""
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
+            tools:visibility="invisible" />
+
+        <com.transferwise.sequencelayout.SequenceStep
+            android:id="@+id/check3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:anchor="Third Check"
+            app:subtitle=""
+            app:title=""
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
+            tools:visibility="invisible" />
+
+        <com.transferwise.sequencelayout.SequenceStep
+            android:id="@+id/check4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:anchor="Fourth Check"
+            app:subtitle=""
+            app:title=""
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
+            tools:visibility="invisible" />
+
+    </com.transferwise.sequencelayout.SequenceLayout>
+
+
+</RelativeLayout>

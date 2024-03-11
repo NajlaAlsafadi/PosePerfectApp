@@ -5,7 +5,19 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+
+        <com.example.poseperfect.overlay.PoseOverlayView
+            android:id="@+id/poseOverlayView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.camera.view.PreviewView>
+
+    <Button
+        android:id="@+id/camera_switch_button"
+        android:layout_width="126dp"
+        android:layout_height="wrap_content"
+        android:text="Switch Camera" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -17,7 +29,59 @@
         android:indeterminate="false"
         android:progressDrawable="@drawable/circular"
         android:max="25" />
+    <TextView
+        android:id="@+id/feedback1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/feedback2"
+        android:text="Feedback1"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF" />
 
+    <TextView
+        android:id="@+id/feedback2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/feedback3"
+        android:text="Feedback2"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/feedback3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/feedback4"
+        android:text="Feedback3"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/feedback4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/timer"
+        android:text="Feedback4"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF" />
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/my_button"
+        android:text="Start"
+        android:textSize="@dimen/_16ssp"
+        android:textAllCaps="true"
+        android:textColor="#FFFF"
+        android:layout_alignTop="@id/progressBar"
+        android:layout_alignStart="@id/progressBar"
+        android:layout_alignEnd="@id/progressBar"
+        android:layout_alignBottom="@id/progressBar"
+        android:gravity="center" />
     <TextView
         android:id="@+id/timer"
         android:layout_width="wrap_content"
@@ -29,10 +93,5 @@
         android:gravity="center"
         android:textSize="20sp"
         android:textColor="#FFFFFF" />
-
-    <com.example.poseperfect.overlay.PoseOverlayView
-        android:id="@+id/poseOverlayView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </RelativeLayout>

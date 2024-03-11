@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.poseperfect.ExerciseFragment;
 import com.example.poseperfect.R;
 import com.example.poseperfect.baseUI.MainActivity;
 import com.example.poseperfect.baseUI.User;
