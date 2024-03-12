@@ -1,20 +1,32 @@
 package com.example.poseperfect;
 
+import static androidx.constraintlayout.widget.StateSet.TAG;
+
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.transferwise.sequencelayout.SequenceStep;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class PostPoseActivity extends AppCompatActivity {
 
     SequenceStep outcome, check1, check2, check3, check4;
     TextView posename;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +72,12 @@ public class PostPoseActivity extends AppCompatActivity {
                 }
             } else {
 
-                steps[i].setVisibility(View.GONE);
+                steps[i].setVisibility(View.INVISIBLE);
             }
         }
+
     }
+
 }
+
+
