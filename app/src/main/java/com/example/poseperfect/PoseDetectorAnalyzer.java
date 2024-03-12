@@ -63,11 +63,11 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                                     @Override
                                     public void onSuccess(Pose pose) {
                                         // Task completed successfully
-                                        if (!exerciseActivity.isTimerRunning) {
-                                            isProcessing = false;
-                                            image.close();
-                                            return;
-                                        }
+//                                        if (!exerciseActivity.isTimerRunning) {
+//                                            isProcessing = false;
+//                                            image.close();
+//                                            return;
+//                                        }
                                         switch (poseName) {
                                             case "plank":
                                                 checkPlankPose(pose);
@@ -273,11 +273,9 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                         exerciseActivity.feedback1.setVisibility(View.VISIBLE);
 
                     });
-//                    exerciseActivity.speakFeedback("Pose is correct");
-//
-//                    exerciseActivity.openPostPoseActivity();
-//                    exerciseActivity.textToSpeech.stop();
-//                    exerciseActivity.finish();
+                      exerciseActivity.speakFeedback("Pose is correct");
+                      exerciseActivity.Finish();
+
                 } else {
                     if (!isBodyStraight) {
                         exerciseActivity.runOnUiThread(() -> {
@@ -353,9 +351,7 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                        // exerciseActivity.feedback1.setText("Pose is correct");
                     });
 //                    exerciseActivity.speakFeedback("Pose is correct");
-//                    exerciseActivity.openPostPoseActivity();
-//                    exerciseActivity.textToSpeech.stop();
-//                    exerciseActivity.finish();
+                    exerciseActivity.Finish();
                 } else {
                     if (!isBodyStraight) {
                         exerciseActivity.runOnUiThread(() -> {

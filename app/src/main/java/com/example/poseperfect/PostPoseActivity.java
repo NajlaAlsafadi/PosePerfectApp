@@ -8,8 +8,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -75,7 +78,50 @@ public class PostPoseActivity extends AppCompatActivity {
                 steps[i].setVisibility(View.INVISIBLE);
             }
         }
+        if (poseChecks.containsKey("Outcome")) {
+            boolean poseResult = poseChecks.getBoolean("Outcome");
+            storePoseResult(poseName, poseResult);
+        }
 
+    }
+    private long lastPoseTime = 0;
+    private void storePoseResult(String poseName, boolean poseResult) {
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastPoseTime < 20 * 1000) {
+                return;
+            }
+            lastPoseTime = currentTime;
+
+            String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+            DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users")
+                    .child(currentUser.getUid())
+                    .child("PoseResult")
+                    .child(poseName)
+                    .child(currentDate)
+                    .push();
+
+            Map<String, Object> poseData = new HashMap<>();
+            poseData.put("result", poseResult);
+            poseData.put("date", currentDate);
+
+            userDbRef.setValue(poseData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.d(TAG, "Pose result stored successfully.");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Failed to store pose result.", e);
+                        }
+                    });
+        }
     }
 
 }

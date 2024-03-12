@@ -16,16 +16,20 @@ import java.util.List;
 
 public class PoseOverlayView extends View {
     private Pose pose;
-    private Paint paint;
+    private Paint linePaint;
     private int imageWidth;
     private int imageHeight;
 
     public PoseOverlayView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(10f);
-        paint.setStyle(Paint.Style.STROKE);
+        initPaint();
+    }
+
+    private void initPaint() {
+        linePaint = new Paint();
+        linePaint.setColor(Color.GREEN);
+        linePaint.setStrokeWidth(5f);
+        linePaint.setStyle(Paint.Style.STROKE);
     }
 
     public void updatePose(Pose pose, int imageWidth, int imageHeight) {
@@ -38,32 +42,47 @@ public class PoseOverlayView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (pose != null) {
-            float widthScale = (float) getWidth() / imageWidth;
-            float heightScale = (float) getHeight() / imageHeight;
-            List<PoseLandmark> landmarks = pose.getAllPoseLandmarks();
-            for (PoseLandmark landmark : landmarks) {
-                float x = landmark.getPosition().x * widthScale;
-                float y = landmark.getPosition().y * heightScale;
-                canvas.drawCircle(x, y, 10, paint);
-            }
-            drawLineBetween(canvas, pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER), pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER));
-            drawLineBetween(canvas, pose.getPoseLandmark(PoseLandmark.LEFT_HIP), pose.getPoseLandmark(PoseLandmark.RIGHT_HIP));
-            drawLineBetween(canvas, pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER), pose.getPoseLandmark(PoseLandmark.LEFT_HIP));
-            drawLineBetween(canvas, pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER), pose.getPoseLandmark(PoseLandmark.RIGHT_HIP));
+        if (pose == null) return;
+
+        float widthScale = (float) getWidth() / imageWidth;
+        float heightScale = (float) getHeight() / imageHeight;
+
+
+        List<PoseLandmark> landmarks = pose.getAllPoseLandmarks();
+        if (!landmarks.isEmpty()) {
+
+            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.RIGHT_SHOULDER, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.LEFT_HIP, PoseLandmark.RIGHT_HIP, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_HIP, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_HIP, widthScale, heightScale);
+
+            // Left arm
+            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_ELBOW, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.LEFT_ELBOW, PoseLandmark.LEFT_WRIST, widthScale, heightScale);
+
+            // Right arm
+            drawLine(canvas, pose, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_ELBOW, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_ELBOW, PoseLandmark.RIGHT_WRIST, widthScale, heightScale);
+
+            // Body to legs
+            drawLine(canvas, pose, PoseLandmark.LEFT_HIP, PoseLandmark.LEFT_KNEE, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.LEFT_KNEE, PoseLandmark.LEFT_ANKLE, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_HIP, PoseLandmark.RIGHT_KNEE, widthScale, heightScale);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_KNEE, PoseLandmark.RIGHT_ANKLE, widthScale, heightScale);
         }
     }
-    private void drawLineBetween(Canvas canvas, PoseLandmark startLandmark, PoseLandmark endLandmark) {
-        if (startLandmark != null && endLandmark != null) {
-            float widthScale = (float) getWidth() / imageWidth;
-            float heightScale = (float) getHeight() / imageHeight;
 
+    private void drawLine(Canvas canvas, Pose pose, int startLandmarkId, int endLandmarkId, float widthScale, float heightScale) {
+        PoseLandmark startLandmark = pose.getPoseLandmark(startLandmarkId);
+        PoseLandmark endLandmark = pose.getPoseLandmark(endLandmarkId);
+
+        if (startLandmark != null && endLandmark != null) {
             float startX = startLandmark.getPosition().x * widthScale;
             float startY = startLandmark.getPosition().y * heightScale;
             float endX = endLandmark.getPosition().x * widthScale;
             float endY = endLandmark.getPosition().y * heightScale;
 
-            canvas.drawLine(startX, startY, endX, endY, paint);
+            canvas.drawLine(startX, startY, endX, endY, linePaint);
         }
     }
 }

@@ -31,6 +31,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExerciseActivity extends AppCompatActivity {
 
@@ -53,6 +55,8 @@ public class ExerciseActivity extends AppCompatActivity {
     private CameraSelector backCameraSelector;
     private CameraSelector frontCameraSelector;
     private ProcessCameraProvider cameraProvider;
+    private boolean isTTSInitialized = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +93,7 @@ public class ExerciseActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     textToSpeech.setLanguage(Locale.US);
+                    isTTSInitialized = true;
                 }
             }
         });
@@ -117,7 +122,7 @@ public class ExerciseActivity extends AppCompatActivity {
 
     }
 
-
+    ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         androidx.camera.core.Preview preview = new androidx.camera.core.Preview.Builder().build();
@@ -125,7 +130,7 @@ public class ExerciseActivity extends AppCompatActivity {
         imageAnalysis = new ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), new PoseDetectorAnalyzer(poseName, poseOverlayView, this));
+        imageAnalysis.setAnalyzer(cameraExecutor, new PoseDetectorAnalyzer(poseName, poseOverlayView, this));
         backCameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         frontCameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build();
         currentCameraSelector = backCameraSelector;
@@ -133,7 +138,10 @@ public class ExerciseActivity extends AppCompatActivity {
 
         cameraProvider.bindToLifecycle(this, currentCameraSelector, preview, imageAnalysis);
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
+
+
     }
+
     public void switchCamera() {
         if (currentCameraSelector == backCameraSelector) {
             currentCameraSelector = frontCameraSelector;
@@ -172,11 +180,18 @@ public class ExerciseActivity extends AppCompatActivity {
     }
     public void Finish() {
         isTimerRunning = false;
-        textToSpeech.stop();
-        textToSpeech.shutdown();
+        if (isTTSInitialized) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
         openPostPoseActivity();
         finish();
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cameraExecutor.shutdown();
     }
 
 //    @Override
