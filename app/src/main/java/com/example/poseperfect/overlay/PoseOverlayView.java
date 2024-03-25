@@ -38,14 +38,26 @@ public class PoseOverlayView extends View {
         this.imageHeight = imageHeight;
         invalidate();
     }
+    private float calculateAspectRatioFit(float sourceWidth, float sourceHeight, float destWidth, float destHeight) {
+        float ratio = Math.min(destWidth / sourceWidth, destHeight / sourceHeight);
+        return ratio;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (pose == null) return;
 
-        float widthScale = (float) getWidth() / imageWidth;
-        float heightScale = (float) getHeight() / imageHeight;
+        float sourceWidth = imageWidth;
+        float sourceHeight = imageHeight;
+
+        float destWidth = getWidth();
+        float destHeight = getHeight();
+
+        float ratio = calculateAspectRatioFit(sourceWidth, sourceHeight, destWidth, destHeight);
+
+        float widthScale = ratio;
+        float heightScale = ratio;
 
 
         List<PoseLandmark> landmarks = pose.getAllPoseLandmarks();

@@ -56,6 +56,7 @@ public class ExerciseActivity extends AppCompatActivity {
     private CameraSelector frontCameraSelector;
     private ProcessCameraProvider cameraProvider;
     private boolean isTTSInitialized = false;
+    private boolean isTransitioningToPostPose = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
