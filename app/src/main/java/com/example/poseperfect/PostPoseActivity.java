@@ -1,20 +1,35 @@
 package com.example.poseperfect;
 
+import static androidx.constraintlayout.widget.StateSet.TAG;
+
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.transferwise.sequencelayout.SequenceStep;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class PostPoseActivity extends AppCompatActivity {
 
     SequenceStep outcome, check1, check2, check3, check4;
     TextView posename;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +60,6 @@ public class PostPoseActivity extends AppCompatActivity {
                 findViewById(R.id.check4)
         };
 
-        // Iterate through potential checks, fix this as it is removing the progress bar**********************
         for (int i = 0; i < steps.length; i++) {
             String checkKey = "Check" + (i + 1);
             if (feedbackMap != null && feedbackMap.containsKey(checkKey)) {
@@ -60,8 +74,55 @@ public class PostPoseActivity extends AppCompatActivity {
                 }
             } else {
 
-                steps[i].setVisibility(View.GONE);
+                steps[i].setVisibility(View.INVISIBLE);
             }
         }
+        if (poseChecks.containsKey("Outcome")) {
+            boolean poseResult = poseChecks.getBoolean("Outcome");
+            storePoseResult(poseName, poseResult);
+        }
+
     }
+    private long lastPoseTime = 0;
+    private void storePoseResult(String poseName, boolean poseResult) {
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastPoseTime < 20 * 1000) {
+                return;
+            }
+            lastPoseTime = currentTime;
+
+            String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+            DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users")
+                    .child(currentUser.getUid())
+                    .child("PoseResult")
+                    .child(poseName)
+                    .child(currentDate)
+                    .push();
+
+            Map<String, Object> poseData = new HashMap<>();
+            poseData.put("result", poseResult);
+            poseData.put("date", currentDate);
+
+            userDbRef.setValue(poseData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.d(TAG, "Pose result stored successfully.");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Failed to store pose result.", e);
+                        }
+                    });
+        }
+    }
+
 }
+
+

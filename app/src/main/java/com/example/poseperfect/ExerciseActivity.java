@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
@@ -31,6 +32,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExerciseActivity extends AppCompatActivity {
 
@@ -49,10 +52,10 @@ public class ExerciseActivity extends AppCompatActivity {
     private String lastFeedback = null;
     private long lastFeedbackTime = 0;
     HashMap<String, Object[]> feedbackMap = new HashMap<>();
-    private CameraSelector currentCameraSelector;
-    private CameraSelector backCameraSelector;
-    private CameraSelector frontCameraSelector;
     private ProcessCameraProvider cameraProvider;
+    private boolean isTTSInitialized = false;
+    private boolean isTransitioningToPostPose = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +77,7 @@ public class ExerciseActivity extends AppCompatActivity {
         feedback2.setVisibility(View.GONE);
         feedback3.setVisibility(View.GONE);
         feedback4.setVisibility(View.GONE);
+
         // Call checkStandingStraightArmsOutPose and get the result Bundle
         poseDetectorAnalyzer = new PoseDetectorAnalyzer(poseName, poseOverlayView, this);
         Button cameraSwitchButton = findViewById(R.id.camera_switch_button);
@@ -89,6 +93,7 @@ public class ExerciseActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     textToSpeech.setLanguage(Locale.US);
+                    isTTSInitialized = true;
                 }
             }
         });
@@ -116,8 +121,11 @@ public class ExerciseActivity extends AppCompatActivity {
         }
 
     }
+    private CameraSelector backCameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+    private CameraSelector frontCameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
+    private CameraSelector currentCameraSelector = backCameraSelector;
 
-
+    ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         androidx.camera.core.Preview preview = new androidx.camera.core.Preview.Builder().build();
@@ -125,7 +133,7 @@ public class ExerciseActivity extends AppCompatActivity {
         imageAnalysis = new ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), new PoseDetectorAnalyzer(poseName, poseOverlayView, this));
+        imageAnalysis.setAnalyzer(cameraExecutor, new PoseDetectorAnalyzer(poseName, poseOverlayView, this));
         backCameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         frontCameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build();
         currentCameraSelector = backCameraSelector;
@@ -133,19 +141,54 @@ public class ExerciseActivity extends AppCompatActivity {
 
         cameraProvider.bindToLifecycle(this, currentCameraSelector, preview, imageAnalysis);
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
+
+
     }
+
     public void switchCamera() {
-        if (currentCameraSelector == backCameraSelector) {
+        Log.d("ExerciseActivity", "Current camera after switch: " + (currentCameraSelector == frontCameraSelector ? "Front" : "Back"));
+        if (currentCameraSelector.equals(backCameraSelector)) {
             currentCameraSelector = frontCameraSelector;
+            Log.d("ExerciseActivity", "Switching to front camera");
         } else {
             currentCameraSelector = backCameraSelector;
+            Log.d("ExerciseActivity", "Switching to back camera");
         }
-        cameraProvider.unbindAll();
-        bindPreview(cameraProvider);
+        try {
+            if (cameraProvider != null) {
+                cameraProvider.unbindAll();
+                bindCameraUseCases();
+            }
+        } catch (Exception e) {
+            Log.e("ExerciseActivity", "Failed to switch camera", e);
+        }
     }
+
+    private void bindCameraUseCases() {
+
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+
+
+            Preview preview = new Preview.Builder().build();
+            preview.setSurfaceProvider(previewView.getSurfaceProvider());
+
+            imageAnalysis = new ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build();
+            imageAnalysis.setAnalyzer(cameraExecutor, poseDetectorAnalyzer);
+
+            cameraProvider.bindToLifecycle(
+                    this,
+                    currentCameraSelector,
+                    preview,
+                    imageAnalysis);
+        }
+    }
+
     private void startTimer() {
 
-        countDownTimer = new CountDownTimer(20000, 1000) {
+        countDownTimer = new CountDownTimer(30000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 progressBar.setProgress((int) (millisUntilFinished / 1000));
@@ -154,10 +197,7 @@ public class ExerciseActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-//                isTimerRunning = false;
-//                textToSpeech.stop();
-//                textToSpeech.shutdown();
-//                openPostPoseActivity();
+
                 Finish();
 
             }
@@ -172,22 +212,21 @@ public class ExerciseActivity extends AppCompatActivity {
     }
     public void Finish() {
         isTimerRunning = false;
-        textToSpeech.stop();
-        textToSpeech.shutdown();
+        if (isTTSInitialized) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
         openPostPoseActivity();
         finish();
-
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        if (countDownTimer != null) {
-//            countDownTimer.cancel();
-//            textToSpeech.stop();
-//            textToSpeech.shutdown();
-//        }
-//    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cameraExecutor.shutdown();
+    }
+
+
     protected void speakFeedback(String feedback) {
         long currentTime = System.currentTimeMillis();
         if (!feedback.equals(lastFeedback) || currentTime - lastFeedbackTime > 5000) {
@@ -199,16 +238,16 @@ public class ExerciseActivity extends AppCompatActivity {
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-
         cameraProviderFuture.addListener(() -> {
             try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                bindPreview(cameraProvider);
+                cameraProvider = cameraProviderFuture.get();
+                bindCameraUseCases();
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("ExerciseActivity", "Use case binding failed", e);
             }
         }, ContextCompat.getMainExecutor(this));
     }
+
     public void openPostPoseActivity() {
         Intent intent = new Intent(this, PostPoseActivity.class);
         intent.putExtra("pose_checks", poseChecks);

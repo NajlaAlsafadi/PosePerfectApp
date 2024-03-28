@@ -62,12 +62,7 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                                 new OnSuccessListener<Pose>() {
                                     @Override
                                     public void onSuccess(Pose pose) {
-                                        // Task completed successfully
-                                        if (!exerciseActivity.isTimerRunning) {
-                                            isProcessing = false;
-                                            image.close();
-                                            return;
-                                        }
+
                                         switch (poseName) {
                                             case "plank":
                                                 checkPlankPose(pose);
@@ -78,6 +73,9 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                                                 break;
                                             case "Boat":
                                                 checkBoatPose(pose);
+                                                break;
+                                            case "Warrior":
+                                                checkWarriorPose(pose);
                                                 break;
                                             case "T-Pose":
                                                 checkStandingStraightArmsOutPose(pose);
@@ -250,19 +248,19 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                 Log.d("PoseCheck", "Right body angle before calculations: " + rightBodyAngle);
                 Log.d("PoseCheck", "Left body angle before calculations: " + leftBodyAngle);
 
-                if (Math.abs(rightBodyAngle - 180) > 15 || Math.abs(leftBodyAngle - 180) > 15) {
+                if (Math.abs(rightBodyAngle - 180) > 20 || Math.abs(leftBodyAngle - 180) > 20) {
                     isPoseCorrect = false;
                     isBodyStraight = false;
                 }
                 Log.d("PoseCheck", "Is body straight: " + isBodyStraight);
 
                 // Check if arms are out
-                float rightArmAngle = calculateAngle(rightShoulder, rightElbow, rightHip);
-                float leftArmAngle = calculateAngle(leftShoulder, leftElbow, leftHip);
+                float rightArmAngle = calculateAngle(rightElbow, rightShoulder, rightHip);
+                float leftArmAngle = calculateAngle(leftElbow, leftShoulder, leftHip);
                 Log.d("PoseCheck", "Right arm angle before calculations: " + rightArmAngle);
                 Log.d("PoseCheck", "Left arm angle before calculations: " + leftArmAngle);
 
-                if (Math.abs(rightArmAngle - 90) > 20 || Math.abs(leftArmAngle - 90) > 20) {
+                if (Math.abs(rightArmAngle - 90) > 15 || Math.abs(leftArmAngle - 90) > 15) {
                     isPoseCorrect = false;
                     areArmsOut = false;
                 }
@@ -273,11 +271,9 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                         exerciseActivity.feedback1.setVisibility(View.VISIBLE);
 
                     });
-//                    exerciseActivity.speakFeedback("Pose is correct");
-//
-//                    exerciseActivity.openPostPoseActivity();
-//                    exerciseActivity.textToSpeech.stop();
-//                    exerciseActivity.finish();
+                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.textToSpeech.stop();
+
                 } else {
                     if (!isBodyStraight) {
                         exerciseActivity.runOnUiThread(() -> {
@@ -331,13 +327,13 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                 float bodyAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
                 Log.d("PoseCheck", "Right body angle before calculations: " + bodyAngle);
 
-                if (Math.abs(bodyAngle - 180) > 15) {
+                if (Math.abs(bodyAngle - 180) > 20) {
                     isPoseCorrect = false;
                     isBodyStraight = false;
                 }
                 Log.d("PoseCheck", "Is body straight: " + isBodyStraight);
 
-                // Check if leg is bent
+                // Check if leg is bent 90 degrees
                 float legAngle = calculateAngle(rightHip, rightKnee, rightAnkle);
                 Log.d("PoseCheck", "Right leg angle before calculations: " + legAngle);
 
@@ -350,12 +346,10 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                 if (isPoseCorrect) {
                     exerciseActivity.runOnUiThread(() -> {
                         exerciseActivity.feedback1.setVisibility(View.VISIBLE);
-                       // exerciseActivity.feedback1.setText("Pose is correct");
+                        exerciseActivity.feedback1.setText("Pose is correct");
                     });
-//                    exerciseActivity.speakFeedback("Pose is correct");
-//                    exerciseActivity.openPostPoseActivity();
-//                    exerciseActivity.textToSpeech.stop();
-//                    exerciseActivity.finish();
+                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.textToSpeech.stop();
                 } else {
                     if (!isBodyStraight) {
                         exerciseActivity.runOnUiThread(() -> {
@@ -386,6 +380,203 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
     }
 
     private void checkBoatPose(Pose pose) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                boolean isPoseCorrect = true;
+                boolean isHipsAngleCorrect = true;
+                boolean isLegsStraight = true;
+                boolean isArmsParallelToGround = true;
 
+                PoseLandmark leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER);
+                PoseLandmark rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER);
+                PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
+                PoseLandmark rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP);
+                PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
+                PoseLandmark rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE);
+                PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
+                PoseLandmark rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE);
+                PoseLandmark leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST);
+                PoseLandmark rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST);
+
+                if (leftShoulder == null || rightShoulder == null || leftHip == null || rightHip == null ||
+                        leftKnee == null || rightKnee == null || leftAnkle == null || rightAnkle == null ||
+                        leftWrist == null || rightWrist == null) {
+                    return;
+                }
+
+                //1.  Check if thighs are 45 degrees to the ground
+                float rightHipAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
+                Log.d("PoseCheck", "Right Hip before calculations: " + rightHipAngle);
+                if (Math.abs(rightHipAngle - 50) > 20) {
+                    isPoseCorrect = false;
+                    isHipsAngleCorrect = false;
+                }
+                Log.d("PoseCheck", "Are hips at correct angle: " + isHipsAngleCorrect);
+                // 2. Check if legs are straight
+                float rightLegStraightness = calculateAngle(rightHip, rightKnee, rightAnkle);
+                Log.d("PoseCheck", "Right leg straightness before calculations:" + rightLegStraightness);
+                if (Math.abs(rightLegStraightness - 180) > 15) {
+                    isPoseCorrect = false;
+                    isLegsStraight = false;
+                }
+                Log.d("PoseCheck", "Are legs straight: " + isLegsStraight);
+                // 3. Check if arms are 45 degrees to body
+                float armAngleWithGround = calculateAngle(rightWrist, rightShoulder, rightHip);
+                Log.d("PoseCheck", "armAngleWithGround before calculations:" + armAngleWithGround);
+                if (Math.abs(armAngleWithGround - 50) > 10) {
+                    isPoseCorrect = false;
+                    isArmsParallelToGround = false;
+                }
+                Log.d("PoseCheck", "Are arms parallel: " + isArmsParallelToGround);
+                if (isPoseCorrect) {
+                    exerciseActivity.runOnUiThread(() -> {
+                        exerciseActivity.feedback1.setVisibility(View.VISIBLE);
+                        exerciseActivity.feedback1.setText("Pose is correct");
+                    });
+                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.textToSpeech.stop();
+                } else {
+                    if (!isHipsAngleCorrect) {
+                        exerciseActivity.runOnUiThread(() -> {
+                            exerciseActivity.feedback1.setVisibility(View.VISIBLE);
+                            exerciseActivity.feedback1.setText("Lift legs to be about 50 degrees");
+                        });
+                        exerciseActivity.speakFeedback("Lift legs to be about 50 degrees");
+                    }
+                    if (!isLegsStraight) {
+                        exerciseActivity.runOnUiThread(() -> {
+                            exerciseActivity.feedback2.setVisibility(View.VISIBLE);
+                            exerciseActivity.feedback2.setText("Keep legs straight");
+                        });
+
+                        exerciseActivity.speakFeedback("Keep legs straight");
+                    }
+                    if (!isArmsParallelToGround) {
+                        exerciseActivity.runOnUiThread(() -> {
+                            exerciseActivity.feedback3.setVisibility(View.VISIBLE);
+                            exerciseActivity.feedback3.setText("Extend arms parallel to the ground");
+                        });
+                        exerciseActivity.speakFeedback("Extend arms parallel to the ground");
+                    }
+                }
+                exerciseActivity.poseChecks.putBoolean("Outcome", isPoseCorrect);
+                exerciseActivity.feedbackMap.put("Check1", new Object[]{isHipsAngleCorrect, isHipsAngleCorrect ? "Legs were lifted high enough" : "Legs were not lifted high enough"});
+                exerciseActivity.feedbackMap.put("Check2", new Object[]{isLegsStraight, isLegsStraight ? "Legs were straight" : "Legs were not straight"});
+                exerciseActivity.feedbackMap.put("Check3", new Object[]{isArmsParallelToGround, isArmsParallelToGround ? "Arms were parallel to ground" : "Arms were not parallel to ground"});
+            }
+        }, 3000);
+    }
+
+    private void checkWarriorPose(Pose pose) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                boolean isPoseCorrect = true;
+                boolean isFrontKneeBentCorrectly = true;
+                boolean isBackLegStraight = true;
+                boolean isArmsCorrectlyPositioned = true;
+                boolean isBodyCorrectlyPositioned = true;
+
+                PoseLandmark leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER);
+                PoseLandmark rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER);
+                PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
+                PoseLandmark rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP);
+                PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
+                PoseLandmark rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE);
+                PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
+                PoseLandmark rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE);
+                PoseLandmark rightElbow = pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW);
+
+                if (leftShoulder == null || rightShoulder == null || leftHip == null || rightHip == null ||
+                        leftKnee == null || rightKnee == null || leftAnkle == null || rightAnkle == null) {
+                    return;
+                }
+
+                // 1. Check if front knee is bent correctly
+                float frontKneeAngle = calculateAngle(rightAnkle, rightKnee, rightHip);
+                Log.d("PoseCheck", "Initial front knee angle: " + frontKneeAngle);
+                if (Math.abs(frontKneeAngle - 110) > 10) {
+                    isPoseCorrect = false;
+                    isFrontKneeBentCorrectly = false;
+                }
+                Log.d("PoseCheck", "Is front knee bent correctly: " + isFrontKneeBentCorrectly);
+
+                // 2. Check if back leg is straight
+                float backLegAngle = calculateAngle(leftHip, leftKnee, leftAnkle);
+                Log.d("PoseCheck", "Initial back leg angle: " + backLegAngle);
+                if (Math.abs(backLegAngle - 180) > 10) {
+                    isPoseCorrect = false;
+                    isBackLegStraight = false;
+                }
+                Log.d("PoseCheck", "Is back leg straight: " + isBackLegStraight);
+
+                // 3. Check if arms are correctly straight
+                float armsAngle = calculateAngle(leftShoulder, rightShoulder, rightElbow);
+                Log.d("PoseCheck", "Initial arms angle: " + armsAngle);
+                if (Math.abs(armsAngle - 180) > 15) {
+                    isPoseCorrect = false;
+                    isArmsCorrectlyPositioned = false;
+                }
+                Log.d("PoseCheck", "Are arms correctly positioned: " + isArmsCorrectlyPositioned);
+
+                // 4. Check if body is in correct position
+                float bodyAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
+                Log.d("PoseCheck", "Initial body angle: " + bodyAngle);
+                if (Math.abs(bodyAngle - 90) > 12) {
+                    isPoseCorrect = false;
+                    isBodyCorrectlyPositioned = false;
+                }
+                Log.d("PoseCheck", "Is body correctly positioned: " + isBodyCorrectlyPositioned);
+
+
+                if (isPoseCorrect) {
+                    exerciseActivity.runOnUiThread(() -> {
+                        exerciseActivity.feedback1.setVisibility(View.VISIBLE);
+                        exerciseActivity.feedback1.setText("Pose is correct");
+
+                    });
+                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.textToSpeech.stop();
+                } else {
+                if (!isFrontKneeBentCorrectly) {
+                    exerciseActivity.runOnUiThread(() -> {
+                        exerciseActivity.feedback1.setVisibility(View.VISIBLE);
+                        exerciseActivity.feedback1.setText("Front Knee is not bent enough");
+                    });
+                    exerciseActivity.speakFeedback("Front Knee is not bent enough");
+                }
+                if (!isBackLegStraight) {
+                    exerciseActivity.runOnUiThread(() -> {
+                        exerciseActivity.feedback2.setVisibility(View.VISIBLE);
+                        exerciseActivity.feedback2.setText("Keep back leg straight");
+                    });
+
+                    exerciseActivity.speakFeedback("Keep back leg straight");
+                }
+                if (!isArmsCorrectlyPositioned) {
+                    exerciseActivity.runOnUiThread(() -> {
+                        exerciseActivity.feedback3.setVisibility(View.VISIBLE);
+                        exerciseActivity.feedback3.setText("Keep arms straight out");
+                    });
+                    exerciseActivity.speakFeedback("Keep arms straight out");
+                }
+                    if (!isBodyCorrectlyPositioned) {
+                        exerciseActivity.runOnUiThread(() -> {
+                            exerciseActivity.feedback4.setVisibility(View.VISIBLE);
+                            exerciseActivity.feedback4.setText("Keep body straight");
+                        });
+                        exerciseActivity.speakFeedback("Keep body straight");
+                    }
+            }
+                exerciseActivity.poseChecks.putBoolean("Outcome", isPoseCorrect);
+                exerciseActivity.feedbackMap.put("Check1", new Object[]{isFrontKneeBentCorrectly, isFrontKneeBentCorrectly ? "Front Knee was at correct angle" : "Front Knee was not at correct angle"});
+                exerciseActivity.feedbackMap.put("Check2", new Object[]{isBackLegStraight, isBackLegStraight ? "Back leg was straight" : "Bck leg was not straight"});
+                exerciseActivity.feedbackMap.put("Check3", new Object[]{isArmsCorrectlyPositioned, isArmsCorrectlyPositioned ? "Arms were parallel to the ground" : "Arms were not parallel to the ground"});
+                exerciseActivity.feedbackMap.put("Check4", new Object[]{isBodyCorrectlyPositioned, isBodyCorrectlyPositioned ? "Torso was in correct position" : "Torso was not upright"});
+
+            }
+        }, 3000);
     }
 }
