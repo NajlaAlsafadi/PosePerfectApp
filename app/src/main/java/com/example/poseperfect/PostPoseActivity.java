@@ -60,7 +60,6 @@ public class PostPoseActivity extends AppCompatActivity {
                 findViewById(R.id.check4)
         };
 
-        // Iterate through potential checks, fix this as it is removing the progress bar**********************
         for (int i = 0; i < steps.length; i++) {
             String checkKey = "Check" + (i + 1);
             if (feedbackMap != null && feedbackMap.containsKey(checkKey)) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
@@ -36,49 +37,45 @@
 
     <FrameLayout
         android:id="@+id/graphPlaceholder"
-        android:layout_width="408dp"
-        android:layout_height="296dp"
-        android:layout_marginTop="104dp"
+        android:layout_width="412dp"
+        android:layout_height="213dp"
+        android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/logSymptomsButton"
-        android:layout_width="158dp"
-        android:layout_height="76dp"
-        android:background="@drawable/transparent_background"
-        android:text="Log Your Day"
-        android:drawableBottom="@drawable/ic_plus"
-        app:layout_constraintEnd_toStartOf="@id/suggestPoseButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/graphPlaceholder" />
-
-    <Button
         android:id="@+id/suggestPoseButton"
-        android:layout_width="158dp"
-        android:layout_height="76dp"
+        android:layout_width="373dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/transparent_background"
-        android:drawableBottom="@drawable/ic_exercises"
+        android:drawableLeft="@drawable/ic_exercises"
         android:text="Suggested Pose"
+        app:layout_constraintBottom_toTopOf="@id/poseSpinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/logSymptomsButton"
-        app:layout_constraintTop_toBottomOf="@id/graphPlaceholder" />
+        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Spinner
         android:id="@+id/poseSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/logSymptomsButton"
+        android:layout_marginTop="21dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/suggestPoseButton" />
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pieChartPlaceholder"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        app:layout_constraintTop_toBottomOf="@id/poseSpinner"
+        android:layout_width="410dp"
+        android:layout_height="193dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/poseSpinner"
+        app:layout_constraintVertical_bias="0.903" />
 </androidx.constraintlayout.widget.ConstraintLayout>

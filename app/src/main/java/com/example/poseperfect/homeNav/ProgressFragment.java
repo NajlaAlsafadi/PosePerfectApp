@@ -4,6 +4,8 @@ import static androidx.constraintlayout.widget.ConstraintLayoutStates.TAG;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,8 +26,11 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.example.poseperfect.ExerciseActivity;
+import com.example.poseperfect.PoseDetectorAnalyzer;
 import com.example.poseperfect.R;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -53,6 +58,7 @@ import java.util.Map;
 public class ProgressFragment extends Fragment {
     private TextView dateTextView;
     private Spinner poseSpinner;
+    public static final String POSE_NAME = "pose_name";
     private PieChart pieChart;
     private HashMap<String, int[]> poseResults = new HashMap<>();
     @Nullable
@@ -104,11 +110,32 @@ public class ProgressFragment extends Fragment {
             }
         }
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         if (suggestedPose != null) {
-            Toast.makeText(getContext(), "Suggested Pose: " + suggestedPose, Toast.LENGTH_LONG).show();
+            final String poseForButton = suggestedPose;
+            builder.setMessage("Based on your previous attempts we recommend you work on this pose: " + suggestedPose)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    })
+                    .setNegativeButton("Start Now", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(getActivity(), ExerciseActivity.class);
+                            intent.putExtra(POSE_NAME, poseForButton);
+                            startActivity(intent);;
+                        }
+                    });
         } else {
-            Toast.makeText(getContext(), "No poses to suggest", Toast.LENGTH_SHORT).show();
+            builder.setMessage("No poses to suggest")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
         }
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
     private void fetchPoseData() {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("PoseResult");

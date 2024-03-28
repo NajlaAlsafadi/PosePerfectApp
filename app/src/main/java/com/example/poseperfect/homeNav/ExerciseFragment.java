@@ -37,14 +37,15 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_exercise, container, false);
-
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         exercises = Arrays.asList(
                 new Exercise("T-Pose", getResources().getString(R.string.T_Pose_desc), getResources().getString(R.string.T_Pose_health), R.drawable.t_pose, "Beginner", "Standing", "https://youtu.be/ToXlJxuFLmU?si=vESk5CNaoA4bcWcU"),
                 new Exercise("Bridge", getResources().getString(R.string.Bridge_desc), getResources().getString(R.string.Bridge_health), R.drawable.bridge, "Intermediate", "Supine / Backbend", "https://youtu.be/XUcAuYd7VU0?si=dOrUm-HD20ST8FrQ"),
-                new Exercise("Boat", getResources().getString(R.string.Boat_desc), getResources().getString(R.string.Boat_health), R.drawable.boat, "Intermediate", "Seated / Balancing", "https://youtu.be/QVEINjrYUPU?si=SfFzigx1JKQwYqAy")
+                new Exercise("Boat", getResources().getString(R.string.Boat_desc), getResources().getString(R.string.Boat_health), R.drawable.boat, "Intermediate", "Seated/Balancing", "https://youtu.be/QVEINjrYUPU?si=SfFzigx1JKQwYqAy"),
+                new Exercise("Warrior", getResources().getString(R.string.Warrior_desc), getResources().getString(R.string.Warrior_health), R.drawable.warrior, "Beginner", "Standing/Balancing", "https://youtu.be/5rT--p_cLOc?si=gy7D3mzH0dUsvvOj")
+
         );
         exerciseAdapter = new ExerciseAdapter(exercises, new ExerciseAdapter.OnItemClickListener() {
             @Override
