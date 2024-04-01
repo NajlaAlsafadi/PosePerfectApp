@@ -2,11 +2,17 @@ package com.example.poseperfect;
 
 import static androidx.constraintlayout.widget.StateSet.TAG;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +25,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.transferwise.sequencelayout.SequenceStep;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +38,7 @@ public class PostPoseActivity extends AppCompatActivity {
 
     SequenceStep outcome, check1, check2, check3, check4;
     TextView posename;
+    TextView dateTextView;
 
 
     @Override
@@ -41,7 +51,9 @@ public class PostPoseActivity extends AppCompatActivity {
         check4 = findViewById(R.id.check4);
         outcome = findViewById(R.id.outcome);
         posename = findViewById(R.id.posename);
-
+        dateTextView = findViewById(R.id.textViewDate);
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        dateTextView.setText(currentDate);
         String poseName = getIntent().getStringExtra("pose_name");
         Bundle poseChecks = getIntent().getBundleExtra("pose_checks");
 
@@ -81,7 +93,34 @@ public class PostPoseActivity extends AppCompatActivity {
             boolean poseResult = poseChecks.getBoolean("Outcome");
             storePoseResult(poseName, poseResult);
         }
+        Button btnDownloadResults = findViewById(R.id.btnDownloadResults);
+        btnDownloadResults.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveResultsAsImage();
+            }
+        });
 
+    }
+    private void saveResultsAsImage() {
+        View content = findViewById(R.id.postPose);
+        Bitmap bitmap = Bitmap.createBitmap(content.getWidth(), content.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        content.draw(canvas);
+
+        String fileName = "PoseResults_" + System.currentTimeMillis() + ".png";
+        File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(imagePath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            Toast.makeText(this, "Results saved to " + imagePath.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error saving image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
     private long lastPoseTime = 0;
     private void storePoseResult(String poseName, boolean poseResult) {

@@ -64,10 +64,13 @@ public class ExerciseActivity extends AppCompatActivity {
         poseOverlayView = findViewById(R.id.poseOverlayView);
         previewView = findViewById(R.id.previewView);
         progressBar = findViewById(R.id.progressBar);
+        progressBar.setProgress(30);
         timerTextView = findViewById(R.id.timer);
-        Button startButton = findViewById(R.id.startButton);
-        startButton.setVisibility(View.VISIBLE);
-        timerTextView.setVisibility(View.GONE);
+        TextView poseNameTextView = findViewById(R.id.poseName);
+        poseNameTextView.setText(poseName);
+
+        timerTextView.setVisibility(View.VISIBLE);
+        timerTextView.setText("Start Timer");
         feedback1 = findViewById(R.id.feedback1);
         feedback2 = findViewById(R.id.feedback2);
         feedback3 = findViewById(R.id.feedback3);
@@ -97,25 +100,28 @@ public class ExerciseActivity extends AppCompatActivity {
                 }
             }
         });
-        startButton.setOnClickListener(new View.OnClickListener() {
+        timerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startButton.setVisibility(View.GONE);
-                timerTextView.setVisibility(View.VISIBLE);
                 startTimer();
             }
         });
         timerTextView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Finish();
+                isTimerRunning = false;
+                if (isTTSInitialized) {
+                    textToSpeech.stop();
+                    textToSpeech.shutdown();
+                }
+                cameraExecutor.shutdown();
+                finish();
                 return true;
             }
         });
 
         if (allPermissionsGranted()) {
             startCamera();
-            //startTimer();
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 10);
         }
@@ -197,7 +203,6 @@ public class ExerciseActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-
                 Finish();
 
             }
@@ -216,6 +221,7 @@ public class ExerciseActivity extends AppCompatActivity {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
+        cameraExecutor.shutdown();
         openPostPoseActivity();
         finish();
     }
