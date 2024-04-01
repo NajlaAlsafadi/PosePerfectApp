@@ -4,33 +4,52 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/postPose"
+
    >
 
     <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="130dp"
+        android:layout_height="57dp"
+        android:layout_above="@+id/sequenceLayout"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="37dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginBottom="10dp"
+        android:layout_toEndOf="@+id/posename"
+        android:gravity="center"
+        android:text="Date"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/posename"
-        android:layout_width="199dp"
-        android:layout_height="71dp"
+        android:layout_width="235dp"
+        android:layout_height="58dp"
         android:layout_above="@id/sequenceLayout"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="22dp"
+        android:layout_marginBottom="13dp"
         android:gravity="center"
         android:text="posename"
+        android:textColor="@color/colorPrimaryDark"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/_20ssp"
         android:textStyle="bold" />
 
     <com.transferwise.sequencelayout.SequenceLayout
         android:id="@+id/sequenceLayout"
-        android:layout_width="353dp"
-        android:layout_height="579dp"
+        android:layout_width="wrap_content"
+        android:layout_height="429dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
 
         android:layout_alignParentBottom="true"
         android:layout_marginStart="31dp"
         android:layout_marginEnd="25dp"
-        android:layout_marginBottom="59dp"
+        android:layout_marginBottom="209dp"
         app:layout_constraintVertical_bias="1.0"
         app:progressForegroundColor="@color/colorAccent">
 
@@ -86,5 +105,12 @@
 
     </com.transferwise.sequencelayout.SequenceLayout>
 
-
+    <Button
+        android:id="@+id/btnDownloadResults"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download Results"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="16dp"/>
 </RelativeLayout>

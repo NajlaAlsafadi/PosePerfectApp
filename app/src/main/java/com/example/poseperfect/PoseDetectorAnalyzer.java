@@ -269,9 +269,10 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                 if (isPoseCorrect) {
                     exerciseActivity.runOnUiThread(() -> {
                         exerciseActivity.feedback1.setVisibility(View.VISIBLE);
+                        exerciseActivity.feedback1.setText("Pose is correct, Please Hold Form");
 
                     });
-                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.speakFeedback("Pose is correct, Please Hold Form");
                     exerciseActivity.textToSpeech.stop();
 
                 } else {
@@ -346,9 +347,9 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                 if (isPoseCorrect) {
                     exerciseActivity.runOnUiThread(() -> {
                         exerciseActivity.feedback1.setVisibility(View.VISIBLE);
-                        exerciseActivity.feedback1.setText("Pose is correct");
+                        exerciseActivity.feedback1.setText("Pose is correct, Please Hold Form");
                     });
-                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.speakFeedback("Pose is correct, Please Hold Form");
                     exerciseActivity.textToSpeech.stop();
                 } else {
                     if (!isBodyStraight) {
@@ -432,9 +433,9 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                 if (isPoseCorrect) {
                     exerciseActivity.runOnUiThread(() -> {
                         exerciseActivity.feedback1.setVisibility(View.VISIBLE);
-                        exerciseActivity.feedback1.setText("Pose is correct");
+                        exerciseActivity.feedback1.setText("Pose is correct, Please Hold Form");
                     });
-                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.speakFeedback("Pose is correct, Please Hold Form");
                     exerciseActivity.textToSpeech.stop();
                 } else {
                     if (!isHipsAngleCorrect) {
@@ -534,10 +535,10 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                 if (isPoseCorrect) {
                     exerciseActivity.runOnUiThread(() -> {
                         exerciseActivity.feedback1.setVisibility(View.VISIBLE);
-                        exerciseActivity.feedback1.setText("Pose is correct");
+                        exerciseActivity.feedback1.setText("Pose is correct, Please Hold Form");
 
                     });
-                    exerciseActivity.speakFeedback("Pose is correct");
+                    exerciseActivity.speakFeedback("Pose is correct, Please Hold Form");
                     exerciseActivity.textToSpeech.stop();
                 } else {
                 if (!isFrontKneeBentCorrectly) {

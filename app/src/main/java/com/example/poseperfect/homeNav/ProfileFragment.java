@@ -73,7 +73,8 @@ public class ProfileFragment extends Fragment {
                         requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
                     }
                 } else {
-                    showPermissionRevokeDialog(Manifest.permission.CAMERA);
+                    showPermissionRevokeDialog(Manifest.permission.CAMERA, cameraPermissionSwitch);
+
                 }
             }
         });
@@ -86,7 +87,8 @@ public class ProfileFragment extends Fragment {
                         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
                     }
                 } else {
-                    showPermissionRevokeDialog(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    showPermissionRevokeDialog(Manifest.permission.WRITE_EXTERNAL_STORAGE, storagePermissionSwitch);
+
                 }
             }
         });
@@ -285,7 +287,7 @@ public class ProfileFragment extends Fragment {
                     }
                 });
     }
-    private void showPermissionRevokeDialog(String permission) {
+    private void showPermissionRevokeDialog(String permission, CompoundButton permissionSwitch) {
         new AlertDialog.Builder(getActivity())
                 .setTitle("Revoke Permission")
                 .setMessage("The permission needs to be revoked manually. Open settings?")
@@ -297,8 +299,20 @@ public class ProfileFragment extends Fragment {
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        permissionSwitch.setChecked(!permissionSwitch.isChecked());
+                    }
+                })
                 .setIcon(android.R.drawable.ic_dialog_alert)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        permissionSwitch.setChecked(!permissionSwitch.isChecked());
+                    }
+                })
                 .show();
     }
+
 }

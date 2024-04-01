@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RadioButton
+        android:id="@+id/dailyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Daily goal"/>
+
+    <RadioButton
+        android:id="@+id/weeklyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weekly goal"/>
+
+    <LinearLayout
+        android:id="@+id/daysLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <CheckBox
+            android:id="@+id/checkBoxMonday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monday" />
+
+        <CheckBox
+            android:id="@+id/checkBoxTuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tuesday"/>
+        <CheckBox
+            android:id="@+id/checkBoxWednesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wednesday"/>
+        <CheckBox
+            android:id="@+id/checkBoxThursday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thursday"/>
+        <CheckBox
+            android:id="@+id/checkBoxFriday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Friday"/>
+        <CheckBox
+            android:id="@+id/checkBoxSaturday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Saturday"/>
+        <CheckBox
+            android:id="@+id/checkBoxSunday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sunday"/>
+
+    </LinearLayout>
+
+    <NumberPicker
+        android:id="@+id/goalTimePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
