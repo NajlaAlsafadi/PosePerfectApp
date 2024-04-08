@@ -122,6 +122,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
     }
     private void handleImageResult(Uri imageUri) {
         StaticImagePoseAnalyzer analyzer = new StaticImagePoseAnalyzer(getContext());
+
         analyzer.setPoseName(currentPoseName);
         analyzer.analyzeImage(imageUri);
 

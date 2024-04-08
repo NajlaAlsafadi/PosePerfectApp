@@ -221,17 +221,29 @@ public class ExerciseActivity extends AppCompatActivity {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
-        cameraExecutor.shutdown();
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
+
+        if (cameraExecutor != null) {
+            cameraExecutor.shutdown();
+        }
         openPostPoseActivity();
         finish();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        cameraExecutor.shutdown();
-    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
+
+        if (cameraExecutor != null) {
+            cameraExecutor.shutdown();
+        }
+    }
 
     protected void speakFeedback(String feedback) {
         long currentTime = System.currentTimeMillis();

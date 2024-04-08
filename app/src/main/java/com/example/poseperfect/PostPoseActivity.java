@@ -63,7 +63,7 @@ public class PostPoseActivity extends AppCompatActivity {
             outcome.setSubtitle(poseChecks.getBoolean("Outcome") ? "Passed" : "Failed");
             outcome.setActive(poseChecks.getBoolean("Outcome"));
         }
-
+        Bundle analysisResults = getIntent().getBundleExtra("analysisResults");
         HashMap<String, Object[]> feedbackMap = (HashMap<String, Object[]>) getIntent().getSerializableExtra("FeedbackMap");
         SequenceStep[] steps = new SequenceStep[]{
                 findViewById(R.id.check1),
@@ -123,44 +123,46 @@ public class PostPoseActivity extends AppCompatActivity {
         }
     }
     private long lastPoseTime = 0;
-    private void storePoseResult(String poseName, boolean poseResult) {
 
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastPoseTime < 20 * 1000) {
-                return;
-            }
-            lastPoseTime = currentTime;
 
-            String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-            DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users")
-                    .child(currentUser.getUid())
-                    .child("PoseResult")
-                    .child(poseName)
-                    .child(currentDate)
-                    .push();
-
-            Map<String, Object> poseData = new HashMap<>();
-            poseData.put("result", poseResult);
-            poseData.put("date", currentDate);
-
-            userDbRef.setValue(poseData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.d(TAG, "Pose result stored successfully.");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e(TAG, "Failed to store pose result.", e);
-                        }
-                    });
+private void storePoseResult(String poseName, boolean poseResult) {
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    if (currentUser != null) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastPoseTime < 20 * 1000) {
+            return;
         }
+        lastPoseTime = currentTime;
+
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String entryId = new SimpleDateFormat("yyyy/MM/dd-HH:mm", Locale.getDefault()).format(new Date());
+        DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
+                .child("users")
+                .child(currentUser.getUid())
+                .child("PoseResult")
+                .child(poseName)
+                .child(entryId);
+
+        Map<String, Object> poseData = new HashMap<>();
+        poseData.put("result", poseResult);
+        poseData.put("date", currentDate);
+
+        userDbRef.setValue(poseData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "Pose result stored successfully.");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Failed to store pose result.", e);
+                    }
+                });
     }
+}
+
 
 }
 

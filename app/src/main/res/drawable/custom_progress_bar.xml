@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background for the progress bar (grey bar) -->
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="5dp" />
+            <solid android:color="#f0f0f0" />
+        </shape>
+    </item>
+
+
+    <item android:id="@android:id/secondaryProgress">
+        <clip>
+            <shape>
+                <corners android:radius="5dp" />
+                <gradient
+                    android:startColor="#ff9d9d9d"
+                    android:centerColor="#ff5a5d5a"
+                    android:endColor="#ff747674"
+                    android:angle="270" />
+            </shape>
+        </clip>
+    </item>
+
+
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <corners android:radius="5dp" />
+                <gradient
+                    android:startColor="#FFB2C5"
+                android:centerColor="#FF7AA2"
+                android:endColor="#FF4081"
+                android:angle="270" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>
