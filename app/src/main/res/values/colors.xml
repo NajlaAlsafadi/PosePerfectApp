@@ -11,5 +11,8 @@
     <color name="green">#008000</color>
     <color name="red">#FF0000</color>
     <color name="pale_purple">#D3D5FF</color>
+    <color name="pass_color">#E8F5E9</color> <!-- Light green -->
+    <color name="fail_color">#FFEBEE</color> <!-- Light red -->
+
     E3D8EE
 </resources>

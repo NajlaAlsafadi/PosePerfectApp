@@ -4,6 +4,7 @@ import static androidx.constraintlayout.widget.StateSet.TAG;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,28 +17,37 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.poseperfect.homeNav.CheckResult;
+import com.example.poseperfect.homeNav.ResultsAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.transferwise.sequencelayout.SequenceStep;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class PostPoseActivity extends AppCompatActivity {
 
-    SequenceStep outcome, check1, check2, check3, check4;
-    TextView posename;
+    TextView posename, outcome;
     TextView dateTextView;
 
 
@@ -45,53 +55,42 @@ public class PostPoseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_postpose);
-        check1 = findViewById(R.id.check1);
-        check2 = findViewById(R.id.check2);
-        check3 = findViewById(R.id.check3);
-        check4 = findViewById(R.id.check4);
+        RecyclerView resultsRecyclerView = findViewById(R.id.resultsRecyclerView);
+        resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         outcome = findViewById(R.id.outcome);
         posename = findViewById(R.id.posename);
         dateTextView = findViewById(R.id.textViewDate);
+
         String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         dateTextView.setText(currentDate);
+
+        long poseDuration = getIntent().getLongExtra("POSE_DURATION", 0);
         String poseName = getIntent().getStringExtra("pose_name");
+        posename.setText(poseName);
         Bundle poseChecks = getIntent().getBundleExtra("pose_checks");
 
-        posename.setText(poseName);
         if (poseChecks.containsKey("Outcome")) {
-            outcome.setTitle("Overall Pose Outcome");
-            outcome.setSubtitle(poseChecks.getBoolean("Outcome") ? "Passed" : "Failed");
-            outcome.setActive(poseChecks.getBoolean("Outcome"));
+            outcome.setText("Overall Pose Outcome: " + (poseChecks.getBoolean("Outcome") ? "Passed" : "Failed"));
+
         }
+
         Bundle analysisResults = getIntent().getBundleExtra("analysisResults");
         HashMap<String, Object[]> feedbackMap = (HashMap<String, Object[]>) getIntent().getSerializableExtra("FeedbackMap");
-        SequenceStep[] steps = new SequenceStep[]{
-                findViewById(R.id.check1),
-                findViewById(R.id.check2),
-                findViewById(R.id.check3),
-                findViewById(R.id.check4)
-        };
-
-        for (int i = 0; i < steps.length; i++) {
-            String checkKey = "Check" + (i + 1);
-            if (feedbackMap != null && feedbackMap.containsKey(checkKey)) {
-                Object[] feedbackData = feedbackMap.get(checkKey);
-                if (feedbackData != null && feedbackData.length == 2) {
-                    boolean checkResult = (boolean) feedbackData[0];
-                    String feedbackMessage = (String) feedbackData[1];
-                    steps[i].setTitle("Check " + (i + 1) + (checkResult ? " - Passed" : " - Failed"));
-                    steps[i].setSubtitle(feedbackMessage);
-                    steps[i].setActive(checkResult);
-                    steps[i].setVisibility(View.VISIBLE);
-                }
-            } else {
-
-                steps[i].setVisibility(View.INVISIBLE);
-            }
+        List<CheckResult> results = new ArrayList<>();
+        for (Map.Entry<String, Object[]> entry : feedbackMap.entrySet()) {
+            Object[] feedback = entry.getValue();
+            boolean passed = (Boolean) feedback[0];
+            String message = (String) feedback[1];
+            results.add(new CheckResult(passed, message));
         }
+
+        ResultsAdapter adapter = new ResultsAdapter(this, results);
+        resultsRecyclerView.setAdapter(adapter);
+
         if (poseChecks.containsKey("Outcome")) {
             boolean poseResult = poseChecks.getBoolean("Outcome");
-            storePoseResult(poseName, poseResult);
+            Log.d("PostPoseActivity", "Received duration: " + poseDuration);
+            storePoseResult(poseName, poseResult, poseDuration);
         }
         Button btnDownloadResults = findViewById(R.id.btnDownloadResults);
         btnDownloadResults.setOnClickListener(new View.OnClickListener() {
@@ -102,12 +101,34 @@ public class PostPoseActivity extends AppCompatActivity {
         });
 
     }
+    private List<String> getFailedResultsWithMessages() {
+        List<String> failedResults = new ArrayList<>();
+
+        HashMap<String, Object[]> feedbackMap = (HashMap<String, Object[]>) getIntent().getSerializableExtra("FeedbackMap");
+
+        if (feedbackMap != null) {
+            for (Map.Entry<String, Object[]> entry : feedbackMap.entrySet()) {
+                boolean passed = (Boolean) entry.getValue()[0];
+                String message = (String) entry.getValue()[1];
+
+
+                if (!passed) {
+                    failedResults.add(message);
+                }
+            }
+        }
+
+        return failedResults;
+    }
+
     private void saveResultsAsImage() {
         View content = findViewById(R.id.postPose);
         Bitmap bitmap = Bitmap.createBitmap(content.getWidth(), content.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         content.draw(canvas);
-
+        content.setBackgroundColor(Color.WHITE);
+        content.draw(canvas);
+        content.setBackgroundColor(0);
         String fileName = "PoseResults_" + System.currentTimeMillis() + ".png";
         File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
         FileOutputStream fos;
@@ -122,48 +143,46 @@ public class PostPoseActivity extends AppCompatActivity {
             Toast.makeText(this, "Error saving image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-    private long lastPoseTime = 0;
+
+        private void storePoseResult(String poseName, boolean poseResult, long durationMillis) {
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-private void storePoseResult(String poseName, boolean poseResult) {
-    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-    if (currentUser != null) {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastPoseTime < 20 * 1000) {
-            return;
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                String entryId = new SimpleDateFormat("yyyy/MM/dd/HH:mm", Locale.getDefault()).format(new Date());
+                DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
+                        .child("users")
+                        .child(currentUser.getUid())
+                        .child("PoseResult")
+                        .child(poseName)
+                        .child(entryId);
+
+                Map<String, Object> poseData = new HashMap<>();
+                poseData.put("result", poseResult);
+                poseData.put("date", currentDate);
+                Log.d(TAG, "Storing duration: " + durationMillis);
+                poseData.put("durationMillis", durationMillis);
+            if (!poseResult) {
+                List<String> failedMessages = getFailedResultsWithMessages();
+                poseData.put("failedMessages", failedMessages);
+            }
+                userDbRef.setValue(poseData)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d(TAG, "Pose result stored successfully.");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e(TAG, "Failed to store pose result.", e);
+                            }
+                        });
+            }
         }
-        lastPoseTime = currentTime;
-
-        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-        String entryId = new SimpleDateFormat("yyyy/MM/dd-HH:mm", Locale.getDefault()).format(new Date());
-        DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
-                .child("users")
-                .child(currentUser.getUid())
-                .child("PoseResult")
-                .child(poseName)
-                .child(entryId);
-
-        Map<String, Object> poseData = new HashMap<>();
-        poseData.put("result", poseResult);
-        poseData.put("date", currentDate);
-
-        userDbRef.setValue(poseData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(TAG, "Pose result stored successfully.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Failed to store pose result.", e);
-                    }
-                });
-    }
-}
 
 
-}
+
 
 

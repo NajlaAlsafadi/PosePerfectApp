@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
@@ -45,112 +47,120 @@ public class ExerciseActivity extends AppCompatActivity {
     public TextToSpeech textToSpeech;
     public TextView feedback1, feedback2, feedback3, feedback4;
     private String poseName;
+    HashMap<String, Object[]> feedbackMap = new HashMap<>();
     public boolean isTimerRunning = false;
     private PoseDetectorAnalyzer poseDetectorAnalyzer;
     public Bundle poseChecks = new Bundle();
     private PoseOverlayView poseOverlayView;
-    private String lastFeedback = null;
-    private long lastFeedbackTime = 0;
-    HashMap<String, Object[]> feedbackMap = new HashMap<>();
     private ProcessCameraProvider cameraProvider;
-    private boolean isTTSInitialized = false;
-    private boolean isTransitioningToPostPose = false;
+    private ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
+    private boolean longPressed = false;
+    private CameraSelector backCameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+    private CameraSelector frontCameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
+    private CameraSelector currentCameraSelector = backCameraSelector;
+    private String lastFeedback = null;
+
+    private long lastFeedbackTime = 0;
+    private long poseDuration = 30000;
+    protected Handler poseCheckHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
+        initializeViews();
+        setupTextToSpeech();
+        configureCameraSwitch();
+        checkCameraPermission();
+    }
+
+    private void initializeViews() {
         poseName = getIntent().getStringExtra(ExerciseFragment.POSE_NAME);
-        poseOverlayView = findViewById(R.id.poseOverlayView);
         previewView = findViewById(R.id.previewView);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setProgress(30);
         timerTextView = findViewById(R.id.timer);
-        TextView poseNameTextView = findViewById(R.id.poseName);
-        poseNameTextView.setText(poseName);
-
-        timerTextView.setVisibility(View.VISIBLE);
-        timerTextView.setText("Start Timer");
+        poseOverlayView = findViewById(R.id.poseOverlayView);
         feedback1 = findViewById(R.id.feedback1);
         feedback2 = findViewById(R.id.feedback2);
         feedback3 = findViewById(R.id.feedback3);
         feedback4 = findViewById(R.id.feedback4);
+        setFeedbackVisibility(View.GONE);
 
-        feedback1.setVisibility(View.GONE);
-        feedback2.setVisibility(View.GONE);
-        feedback3.setVisibility(View.GONE);
-        feedback4.setVisibility(View.GONE);
+        timerTextView.setVisibility(View.VISIBLE);
+        timerTextView.setText("Start Timer");
+        timerTextView.setOnClickListener(v -> startTimer());
+        timerTextView.setOnLongClickListener(v -> {
+            longPressed = true;
+            stopTimerAndCleanup();
+            return true;
+        });
 
-        // Call checkStandingStraightArmsOutPose and get the result Bundle
         poseDetectorAnalyzer = new PoseDetectorAnalyzer(poseName, poseOverlayView, this);
-        Button cameraSwitchButton = findViewById(R.id.camera_switch_button);
-        cameraSwitchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchCamera();
-            }
-        });
+    }
 
-        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.US);
-                    isTTSInitialized = true;
-                }
-            }
-        });
-        timerTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startTimer();
-            }
-        });
-        timerTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                isTimerRunning = false;
-                if (isTTSInitialized) {
-                    textToSpeech.stop();
-                    textToSpeech.shutdown();
-                }
-                cameraExecutor.shutdown();
-                finish();
-                return true;
-            }
-        });
+    private void setFeedbackVisibility(int visibility) {
+        feedback1.setVisibility(visibility);
+        feedback2.setVisibility(visibility);
+        feedback3.setVisibility(visibility);
+        feedback4.setVisibility(visibility);
+    }
 
-        if (allPermissionsGranted()) {
-            startCamera();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 10);
+    private void stopTimerAndCleanup() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
         }
-
-    }
-    private CameraSelector backCameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
-    private CameraSelector frontCameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
-    private CameraSelector currentCameraSelector = backCameraSelector;
-
-    ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
-
-    private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
-        androidx.camera.core.Preview preview = new androidx.camera.core.Preview.Builder().build();
-
-        imageAnalysis = new ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build();
-        imageAnalysis.setAnalyzer(cameraExecutor, new PoseDetectorAnalyzer(poseName, poseOverlayView, this));
-        backCameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
-        frontCameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build();
-        currentCameraSelector = backCameraSelector;
-        this.cameraProvider = cameraProvider;
-
-        cameraProvider.bindToLifecycle(this, currentCameraSelector, preview, imageAnalysis);
-        preview.setSurfaceProvider(previewView.getSurfaceProvider());
-
-
+        isTimerRunning = false;
+        shutdownTextToSpeech();
+        cleanupCamera();
+        if (longPressed) {
+            navigateBack();
+        }
     }
 
+    private void navigateBack() {
+        finish();
+    }
+
+    private void cleanupCamera() {
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
+        if (cameraExecutor != null && !cameraExecutor.isShutdown()) {
+            cameraExecutor.shutdownNow();
+        }
+    }
+
+    private void shutdownTextToSpeech() {
+        if (textToSpeech != null) {
+            if (textToSpeech.isSpeaking()) {
+                textToSpeech.stop();
+            }
+            textToSpeech.shutdown();
+        }
+    }
+
+    private void setupTextToSpeech() {
+        textToSpeech = new TextToSpeech(this, status -> {
+            if (status != TextToSpeech.ERROR) {
+                textToSpeech.setLanguage(Locale.US);
+            } else {
+                Log.e("TTS", "Initialization failed!");
+            }
+        });
+    }
+
+    private void configureCameraSwitch() {
+        findViewById(R.id.camera_switch_button).setOnClickListener(v -> switchCamera());
+    }
+
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 10);
+        } else {
+            startCamera();
+        }
+    }
     public void switchCamera() {
         Log.d("ExerciseActivity", "Current camera after switch: " + (currentCameraSelector == frontCameraSelector ? "Front" : "Back"));
         if (currentCameraSelector.equals(backCameraSelector)) {
@@ -170,89 +180,6 @@ public class ExerciseActivity extends AppCompatActivity {
         }
     }
 
-    private void bindCameraUseCases() {
-
-        if (cameraProvider != null) {
-            cameraProvider.unbindAll();
-
-
-            Preview preview = new Preview.Builder().build();
-            preview.setSurfaceProvider(previewView.getSurfaceProvider());
-
-            imageAnalysis = new ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build();
-            imageAnalysis.setAnalyzer(cameraExecutor, poseDetectorAnalyzer);
-
-            cameraProvider.bindToLifecycle(
-                    this,
-                    currentCameraSelector,
-                    preview,
-                    imageAnalysis);
-        }
-    }
-
-    private void startTimer() {
-
-        countDownTimer = new CountDownTimer(30000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                progressBar.setProgress((int) (millisUntilFinished / 1000));
-                timerTextView.setText(String.valueOf(millisUntilFinished / 1000));
-                isTimerRunning = true;
-            }
-
-            public void onFinish() {
-                Finish();
-
-            }
-        }.start();
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (cameraProvider != null) {
-            cameraProvider.unbindAll();
-        }
-    }
-    public void Finish() {
-        isTimerRunning = false;
-        if (isTTSInitialized) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
-        }
-        if (cameraProvider != null) {
-            cameraProvider.unbindAll();
-        }
-
-        if (cameraExecutor != null) {
-            cameraExecutor.shutdown();
-        }
-        openPostPoseActivity();
-        finish();
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (cameraProvider != null) {
-            cameraProvider.unbindAll();
-        }
-
-        if (cameraExecutor != null) {
-            cameraExecutor.shutdown();
-        }
-    }
-
-    protected void speakFeedback(String feedback) {
-        long currentTime = System.currentTimeMillis();
-        if (!feedback.equals(lastFeedback) || currentTime - lastFeedbackTime > 5000) {
-            textToSpeech.speak(feedback, TextToSpeech.QUEUE_ADD, null, null);
-            lastFeedback = feedback;
-            lastFeedbackTime = currentTime;
-        }
-    }
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -261,9 +188,62 @@ public class ExerciseActivity extends AppCompatActivity {
                 cameraProvider = cameraProviderFuture.get();
                 bindCameraUseCases();
             } catch (ExecutionException | InterruptedException e) {
-                Log.e("ExerciseActivity", "Use case binding failed", e);
+                Log.e("CameraFuture", "Error starting camera", e);
             }
         }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void bindCameraUseCases() {
+        //make sure there's nothing bound to the life cycle already
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+
+            //setting up the preview use case
+            Preview preview = new Preview.Builder().build();
+
+            //set the surface provider of the PreviewView to display the camera preview
+            preview.setSurfaceProvider(previewView.getSurfaceProvider());
+
+            //stting up the ImageAnalysis use case
+            imageAnalysis = new ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build();
+            imageAnalysis.setAnalyzer(cameraExecutor, poseDetectorAnalyzer);
+
+            //use the currentCameraSelector here instead of creating a new CameraSelector
+            cameraProvider.bindToLifecycle(this, currentCameraSelector, preview, imageAnalysis);
+        }
+    }
+
+
+
+    protected void speakFeedback(String feedback) {
+        long currentTime = System.currentTimeMillis();
+        if (!feedback.equals(lastFeedback) || currentTime - lastFeedbackTime > 5000) {
+            if (textToSpeech.isSpeaking()) {
+                textToSpeech.stop(); // Ensure no concurrent speech conflict
+            }
+            textToSpeech.speak(feedback, TextToSpeech.QUEUE_FLUSH, null, null); //QUEUE_FLUSH to clear the previous queue
+            lastFeedback = feedback;
+            lastFeedbackTime = currentTime;
+        }
+    }
+
+    private void startTimer() {
+        isTimerRunning = true;
+        longPressed = false;
+        countDownTimer = new CountDownTimer(30000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                progressBar.setProgress((int) (millisUntilFinished / 1000));
+                timerTextView.setText(String.valueOf(millisUntilFinished / 1000));
+            }
+
+            public void onFinish() {
+                if (!longPressed) {
+                    openPostPoseActivity();
+                }
+            }
+        }.start();
     }
 
     public void openPostPoseActivity() {
@@ -271,22 +251,34 @@ public class ExerciseActivity extends AppCompatActivity {
         intent.putExtra("pose_checks", poseChecks);
         intent.putExtra("FeedbackMap", feedbackMap);
         intent.putExtra("pose_name", poseName);
+        intent.putExtra("POSE_DURATION", poseDuration);
         startActivity(intent);
-    }
-
-    private boolean allPermissionsGranted() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+        finish();
+        Log.d("ExerciseActivity", "Sending duration: " + 30000);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 10) {
-            if (allPermissionsGranted()) {
-                startCamera();
-            } else {
-                finish();
-            }
+        if (requestCode == 10 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startCamera();
+        } else {
+            Toast.makeText(this, "Camera permission is required to use this feature", Toast.LENGTH_SHORT).show();
+            finish();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopTimerAndCleanup();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        poseCheckHandler.removeCallbacksAndMessages(null);
+        cleanupCamera();
+        shutdownTextToSpeech();
     }
 }

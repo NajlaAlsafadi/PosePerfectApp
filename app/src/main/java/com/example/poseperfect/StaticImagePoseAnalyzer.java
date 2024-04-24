@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.poseperfect.homeNav.ExerciseFragment;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -41,15 +42,20 @@ public class StaticImagePoseAnalyzer {
         try {
             InputImage image = InputImage.fromFilePath(context, imageUri);
             PoseDetectorOptions options = new PoseDetectorOptions.Builder()
-                    .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
+                    .setDetectorMode(PoseDetectorOptions.SINGLE_IMAGE_MODE)
                     .build();
+
             PoseDetector poseDetector = PoseDetection.getClient(options);
 
             poseDetector.process(image)
                     .addOnSuccessListener(new OnSuccessListener<Pose>() {
                         @Override
                         public void onSuccess(Pose pose) {
-
+                            if (pose.getAllPoseLandmarks().isEmpty()) {
+                                Log.e("StaticImagePoseAnalyzer", "No pose landmarks detected in the image.");
+                                Toast.makeText(context, "Image unclear, please use another photo.", Toast.LENGTH_LONG).show();
+                                return;
+                            }
                             switch (poseName) {
                                 case "Bridge":
                                     checkPelvicCurlPose(pose);
@@ -71,11 +77,13 @@ public class StaticImagePoseAnalyzer {
                         @Override
                         public void onFailure(Exception e) {
                             Log.e("PoseDetection", "Pose detection failed", e);
+                            Toast.makeText(context, "Failed to analyze image. Please try again.", Toast.LENGTH_SHORT).show();
                         }
                     });
 
         } catch (IOException e) {
             Log.e("PoseDetection", "Failed to load image from URI", e);
+            Toast.makeText(context, "Failed to load image. Please check the image path and try again.", Toast.LENGTH_SHORT).show();
 
         }
 
@@ -205,7 +213,7 @@ public class StaticImagePoseAnalyzer {
     }
     protected void checkStandingStraightArmsOutPose(Pose pose) {
 
-
+        Log.d("StaticImagePoseAnalyzer", "Checking standing straight arms out pose");
                 boolean isPoseCorrect = true;
                 boolean isBodyStraight = true;
                 boolean areArmsOut = true;

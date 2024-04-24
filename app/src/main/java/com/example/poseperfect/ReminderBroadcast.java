@@ -1,5 +1,8 @@
-package com.example.poseperfect.homeNav;
+package com.example.poseperfect;
 
+
+
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,22 +10,20 @@ import android.content.Intent;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.example.poseperfect.R;
 
-public class ReminderBroadcastReceiver extends BroadcastReceiver {
+public class ReminderBroadcast extends BroadcastReceiver {
+
+
+    @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "yogaReminderChannel")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "YogaReminder")
                 .setSmallIcon(R.drawable.ic_exercises)
-                .setContentTitle("Yoga Practice Reminder")
-                .setContentText("Time for your yoga practice!")
+                .setContentTitle("Time To Practice Yoga!")
+                .setContentText("You set this reminder for PosePerfect")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-
-
         notificationManager.notify(200, builder.build());
     }
 }
-

@@ -50,4 +50,6 @@
     <string name="T_Pose_desc">1. Both arms reach outward with a light stretch. \n2. Arms should be 90 degrees to body.\n3. The knees, hips and shoulders aligned. \n4. Feet planted and forward.\n5. The gaze is forward.</string>
     <string name="Warrior_desc">1. From a standing position, the legs are separated into a wide stance. \n2. The front knee is bent in a 90-degree angle directly above the ankle. \n3. The back leg is extended and straight with the outside edge of the back foot gripping the earth in a 60-degree angle toward the front. \n4. The inner thighs are externally rotated away from each other.  \n5. The arms are extended out to the sides and are aligned with the shoulders in a straight line with the fingers reaching out. \n6. The gaze is toward the front fingers.</string>
     <string name="Warrior_health">☑ Strengthens and stretches the legs and ankles.\n☑ Stretches the chest, lungs, and shoulders.\n☑ Stimulates abdominal organs. \n☑ Relieves backaches. \n☑ Therapeutic for carpal tunnel syndrome, and sciatica.</string>
+    <string name="channel_name">yogaReminderChannel</string>
+    <string name="channel_description">Yoga Practice Reminder</string>
 </resources>
