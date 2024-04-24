@@ -1,11 +1,13 @@
 package com.example.poseperfect;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.poseperfect.homeNav.ExerciseFragment;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -18,18 +20,18 @@ import com.google.mlkit.vision.pose.PoseDetector;
 import com.google.mlkit.vision.pose.PoseLandmark;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class StaticImagePoseAnalyzer {
 
-//    public interface PoseAnalysisCallback {
-//        void onPoseAnalysisCompleted(boolean isPoseCorrect, String feedback);
-//    }
+
+    private Bundle analysisResults = new Bundle();
+    public Bundle poseChecks = new Bundle();
+    private HashMap<String, Object[]> feedbackMap = new HashMap<>();
 
     private final Context context;
-
     private String poseName;
-    private Boolean isPoseCorrect;
-    private String feedback;
+
     public StaticImagePoseAnalyzer(Context context) {
         this.context = context;
     }
@@ -40,15 +42,20 @@ public class StaticImagePoseAnalyzer {
         try {
             InputImage image = InputImage.fromFilePath(context, imageUri);
             PoseDetectorOptions options = new PoseDetectorOptions.Builder()
-                    .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
+                    .setDetectorMode(PoseDetectorOptions.SINGLE_IMAGE_MODE)
                     .build();
+
             PoseDetector poseDetector = PoseDetection.getClient(options);
 
             poseDetector.process(image)
                     .addOnSuccessListener(new OnSuccessListener<Pose>() {
                         @Override
                         public void onSuccess(Pose pose) {
-
+                            if (pose.getAllPoseLandmarks().isEmpty()) {
+                                Log.e("StaticImagePoseAnalyzer", "No pose landmarks detected in the image.");
+                                Toast.makeText(context, "Image unclear, please use another photo.", Toast.LENGTH_LONG).show();
+                                return;
+                            }
                             switch (poseName) {
                                 case "Bridge":
                                     checkPelvicCurlPose(pose);
@@ -70,25 +77,19 @@ public class StaticImagePoseAnalyzer {
                         @Override
                         public void onFailure(Exception e) {
                             Log.e("PoseDetection", "Pose detection failed", e);
-//                            if(callback != null) {
-//                                callback.onPoseAnalysisCompleted(false, "Pose detection failed: " + e.getMessage());
-//                            }
+                            Toast.makeText(context, "Failed to analyze image. Please try again.", Toast.LENGTH_SHORT).show();
                         }
                     });
 
         } catch (IOException e) {
             Log.e("PoseDetection", "Failed to load image from URI", e);
-//            if(callback != null) {
-//                callback.onPoseAnalysisCompleted(false, "Failed to load image: " + e.getMessage());
-//            }
+            Toast.makeText(context, "Failed to load image. Please check the image path and try again.", Toast.LENGTH_SHORT).show();
+
         }
 
     }
 
     private void checkWarriorPose(Pose pose) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
 
                 boolean isPoseCorrect = true;
                 boolean isFrontKneeBentCorrectly = true;
@@ -147,32 +148,15 @@ public class StaticImagePoseAnalyzer {
                 }
                 Log.d("PoseCheck", "Is body correctly positioned: " + isBodyCorrectlyPositioned);
 
-
-                if (isPoseCorrect) {
-
-                } else {
-                    if (!isFrontKneeBentCorrectly) {
-
-                    }
-                    if (!isBackLegStraight) {
-
-                    }
-                    if (!isArmsCorrectlyPositioned) {
-
-                    }
-                    if (!isBodyCorrectlyPositioned) {
-
-                    }
-                }
-
-
-            }
-        }, 3000);
+        poseChecks.putBoolean("Outcome", isPoseCorrect);
+        feedbackMap.put("Check1", new Object[]{isFrontKneeBentCorrectly, isFrontKneeBentCorrectly ? "Front Knee was at correct angle" : "Front Knee was not at correct angle"});
+        feedbackMap.put("Check2", new Object[]{isBackLegStraight, isBackLegStraight ? "Back leg was straight" : "Bck leg was not straight"});
+        feedbackMap.put("Check3", new Object[]{isArmsCorrectlyPositioned, isArmsCorrectlyPositioned ? "Arms were parallel to the ground" : "Arms were not parallel to the ground"});
+        feedbackMap.put("Check4", new Object[]{isBodyCorrectlyPositioned, isBodyCorrectlyPositioned ? "Torso was in correct position" : "Torso was not upright"});
+        onFinishAnalysis();
     }
     private void checkPelvicCurlPose(Pose pose) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+
 
                 boolean isPoseCorrect = true;
                 boolean isBodyStraight = true;
@@ -208,22 +192,11 @@ public class StaticImagePoseAnalyzer {
                 }
                 Log.d("PoseCheck", "Is leg bent: " + isLegBent);
 
-                if (isPoseCorrect) {
 
-                } else {
-                    if (!isBodyStraight) {
-
-
-                    }
-                    if (!isLegBent) {
-
-
-                    }
-
-                }
-            }
-
-        }, 3000);
+        poseChecks.putBoolean("Outcome", isPoseCorrect);
+                feedbackMap.put("Check1", new Object[]{isBodyStraight, isBodyStraight ? "Body was Straight" : "Your body was not straight"});
+                feedbackMap.put("Check2", new Object[]{isLegBent, isLegBent ? "Leg was in Correct position" : "Your hips were not inline with knees"});
+        onFinishAnalysis();
     }
     private float calculateAngle(PoseLandmark firstPoint, PoseLandmark midPoint, PoseLandmark lastPoint) {
         float angle = (float) Math.abs(
@@ -239,10 +212,8 @@ public class StaticImagePoseAnalyzer {
         return angle;
     }
     protected void checkStandingStraightArmsOutPose(Pose pose) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
 
+        Log.d("StaticImagePoseAnalyzer", "Checking standing straight arms out pose");
                 boolean isPoseCorrect = true;
                 boolean isBodyStraight = true;
                 boolean areArmsOut = true;
@@ -287,28 +258,14 @@ public class StaticImagePoseAnalyzer {
                 }
                 Log.d("PoseCheck", "Are arms out: " + areArmsOut);
 
-                if (isPoseCorrect) {
 
-
-                } else {
-                    if (!isBodyStraight) {
-
-
-                    }
-                    if (!areArmsOut) {
-
-
-                    }
-
-                }
-
-            }
-        }, 3000);
+        poseChecks.putBoolean("Outcome", isPoseCorrect);
+                feedbackMap.put("Check1", new Object[]{isBodyStraight, isBodyStraight ? "Body was Straight" : "Your body was not straight"});
+                feedbackMap.put("Check2", new Object[]{areArmsOut, areArmsOut ? "Arms were perpendicular to body" : "Your arms were not perpendicular to body"});
+        onFinishAnalysis();
     }
     private void checkBoatPose(Pose pose) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+
                 boolean isPoseCorrect = true;
                 boolean isHipsAngleCorrect = true;
                 boolean isLegsStraight = true;
@@ -355,22 +312,26 @@ public class StaticImagePoseAnalyzer {
                     isArmsParallelToGround = false;
                 }
                 Log.d("PoseCheck", "Are arms parallel: " + isArmsParallelToGround);
-                if (isPoseCorrect) {
 
-                } else {
-                    if (!isHipsAngleCorrect) {
-
-                    }
-                    if (!isLegsStraight) {
-
-                    }
-                    if (!isArmsParallelToGround) {
-
-                    }
-                }
-
-            }
-        }, 3000);
+        poseChecks.putBoolean("Outcome", isPoseCorrect);
+                feedbackMap.put("Check1", new Object[]{isHipsAngleCorrect, isHipsAngleCorrect ? "Legs were lifted high enough" : "Legs were not lifted high enough"});
+                feedbackMap.put("Check2", new Object[]{isLegsStraight, isLegsStraight ? "Legs were straight" : "Legs were not straight"});
+                feedbackMap.put("Check3", new Object[]{isArmsParallelToGround, isArmsParallelToGround ? "Arms were parallel to ground" : "Arms were not parallel to ground"});
+        onFinishAnalysis();
     }
+
+    public void openPostPoseActivity() {
+        Intent intent = new Intent(context, PostPoseActivity.class);
+        intent.putExtra("pose_checks", poseChecks);
+        intent.putExtra("FeedbackMap", feedbackMap);
+        intent.putExtra("pose_name", poseName);
+        context.startActivity(intent);
+    }
+
+    private void onFinishAnalysis() {
+        openPostPoseActivity();
+    }
+
+
 
 }
