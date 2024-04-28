@@ -84,7 +84,8 @@ public class ExerciseActivity extends AppCompatActivity {
         feedback3 = findViewById(R.id.feedback3);
         feedback4 = findViewById(R.id.feedback4);
         setFeedbackVisibility(View.GONE);
-
+        TextView poseNameTextView = findViewById(R.id.poseName);
+        poseNameTextView.setText(poseName);
         timerTextView.setVisibility(View.VISIBLE);
         timerTextView.setText("Start Timer");
         timerTextView.setOnClickListener(v -> startTimer());
