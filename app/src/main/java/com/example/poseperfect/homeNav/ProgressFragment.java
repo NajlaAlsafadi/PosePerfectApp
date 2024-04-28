@@ -27,32 +27,21 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
 import com.example.poseperfect.ExerciseActivity;
 import com.example.poseperfect.R;
 import com.example.poseperfect.ReminderBroadcast;
-
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -71,7 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
+
 import java.util.concurrent.TimeUnit;
 
 
@@ -81,6 +70,8 @@ public class ProgressFragment extends Fragment {
     public static final String POSE_NAME = "pose_name";
     private PieChart pieChart;
     private Button goalButton;
+    // poseResults hash map stores the pose name along with an array of 2 integers
+    // representing the count of successful and failed attempts respectively
     private HashMap<String, int[]> poseResults = new HashMap<>();
 
 
@@ -90,11 +81,13 @@ public class ProgressFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_progress, container, false);
 
         dateTextView = rootView.findViewById(R.id.textViewDate);
-        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                .format(new Date());
         dateTextView.setText(currentDate);
         poseSpinner = rootView.findViewById(R.id.poseSpinner);
 
@@ -152,7 +145,8 @@ public class ProgressFragment extends Fragment {
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_goal);
-        dialog.getWindow().setLayout((int) (getResources().getDisplayMetrics().widthPixels * 0.95), ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setLayout((int) (getResources().getDisplayMetrics().widthPixels * 0.95),
+                ViewGroup.LayoutParams.WRAP_CONTENT);
 
         final NumberPicker numberPickerHours = dialog.findViewById(R.id.numberPickerHours);
         numberPickerHours.setMinValue(0);  //minimum number of hours
@@ -202,17 +196,12 @@ public class ProgressFragment extends Fragment {
         goalData.put("reminderDays", reminderDays);
 
         dbRef.child("goals").setValue(goalData)
-                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Goal saved successfully!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to save goal", Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(),
+                        "Goal saved successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(getContext(),
+                        "Failed to save goal", Toast.LENGTH_SHORT).show());
     }
 
-//    private void scheduleReminder(List<String> reminderDays) {
-//        Intent intent = new Intent(getContext(), ReminderBroadcast.class);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-//        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-//        long timeAtButtonClick = System.currentTimeMillis();
-//        long tenSecondsMillis = 1000 * 10;
-//        alarmManager.set(AlarmManager.RTC_WAKEUP, timeAtButtonClick + tenSecondsMillis,pendingIntent);
 
     private void scheduleReminder(List<String> reminderDays) {
         AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
@@ -230,10 +219,11 @@ public class ProgressFragment extends Fragment {
 
         for (String day : reminderDays) {
             int dayOfWeek = getDayOfWeekInt(day);
-            Calendar alarmTime = getNextAlarmTime(dayOfWeek, 10, 05); // Set for 9:30 PM
+            Calendar alarmTime = getNextAlarmTime(dayOfWeek, 16, 50); // Set for 6 PM
 
             Intent intent = new Intent(getContext(), ReminderBroadcast.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), dayOfWeek, intent, PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), dayOfWeek,
+                    intent, PendingIntent.FLAG_IMMUTABLE);
 
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime.getTimeInMillis(), pendingIntent);
             Log.d("ScheduleReminder", "Alarm set for " + day + " at 9:30 PM.");
@@ -272,49 +262,8 @@ public class ProgressFragment extends Fragment {
 
 
 
-    // Clear any previous alarms
-       // alarmManager.cancel(pendingIntent);
-//        Calendar now = Calendar.getInstance();
-//        for (String day : reminderDays) {
-//            Calendar calendar = Calendar.getInstance(); // Use the default time zone and locale
-//            calendar.set(Calendar.HOUR_OF_DAY, 21);
-//            calendar.set(Calendar.MINUTE, 17);
-//            calendar.set(Calendar.SECOND, 0);
-//            calendar.set(Calendar.MILLISECOND, 0);
-//
-//            int today = calendar.get(Calendar.DAY_OF_WEEK);
-//            int targetDayOfWeek = getDayOfWeek(day);
-//
-//            // Calculate how much to add to get to the next occurrence of the target day
-//            int daysUntilTarget = targetDayOfWeek - today;
-////            if (daysUntilTarget <= 0) {
-////                daysUntilTarget += 7; // Make sure it's a future date
-////            }
-//
-//            calendar.add(Calendar.DAY_OF_YEAR, daysUntilTarget);
-//
-//            if (calendar.after(now)) {  // Just in case, double-check it's in the future
-//                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pendingIntent);
-//                Log.d("ScheduleReminder", "Setting alarm for: " + calendar.getTime() + " [" + day + "]");
-//            }
-//        }
 
-   // }
-
-//    private int getDayOfWeek(String day) {
-//        switch (day) {
-//            case "Monday": return Calendar.MONDAY;
-//            case "Tuesday": return Calendar.TUESDAY;
-//            case "Wednesday": return Calendar.WEDNESDAY;
-//            case "Thursday": return Calendar.THURSDAY;
-//            case "Friday": return Calendar.FRIDAY;
-//            case "Saturday": return Calendar.SATURDAY;
-//            case "Sunday": return Calendar.SUNDAY;
-//            default: return Calendar.MONDAY;
-//        }
-//    }
-
-
+    // poseSuccessRatios hash map stores the pose name along with its success ratio
     private HashMap<String, Double> poseSuccessRatios = new HashMap<>(); // Track success ratios for all poses
 
 
@@ -343,16 +292,18 @@ public class ProgressFragment extends Fragment {
             public void onDataChange(DataSnapshot monthSnapshot) {
                 if (!monthSnapshot.exists()) {
                     Log.d("FirebaseData", "No data exists at this path!");
-                    Toast.makeText(getContext(), "No data available for " + poseName, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No data available for " + poseName,
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 int successCount = 0;
                 int totalCount = 0;
                 HashMap<String, Integer> failedMessageCounts = new HashMap<>();
-
-                for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) { // Iterate over each day in the month
-                    for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) { // Iterate over each time entry for the day
+                // Iterate over each day in the month
+                for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                    // Iterate over each time entry for the day
+                    for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
                         totalCount++;
                         Boolean result = timeSnapshot.child("result").getValue(Boolean.class);
                         if (Boolean.TRUE.equals(result)) {
@@ -362,7 +313,8 @@ public class ProgressFragment extends Fragment {
                             if (messagesSnapshot.exists()) {
                                 for (DataSnapshot msgSnapshot : messagesSnapshot.getChildren()) {
                                     String msg = msgSnapshot.getValue(String.class);
-                                    failedMessageCounts.put(msg, failedMessageCounts.getOrDefault(msg, 0) + 1);
+                                    failedMessageCounts.put(msg, failedMessageCounts
+                                            .getOrDefault(msg, 0) + 1);
                                 }
                             }
                         }
@@ -371,7 +323,8 @@ public class ProgressFragment extends Fragment {
 
                 double successRatio = totalCount > 0 ? (double) successCount / totalCount : 0;
                 poseSuccessRatios.put(poseName, successRatio);
-                Log.d("StatsCalculation", "Total: " + totalCount + ", Successes: " + successCount + ", Ratio: " + successRatio);
+                Log.d("StatsCalculation", "Total: " + totalCount + ", Successes: "
+                        + successCount + ", Ratio: " + successRatio);
 
                 double selectedPoseSuccessRatio = poseSuccessRatios.get(poseName);
                 showStatistics(poseName, selectedPoseSuccessRatio, failedMessageCounts);
@@ -385,9 +338,12 @@ public class ProgressFragment extends Fragment {
     }
 
 
-    private void showStatistics(String poseName, double selectedPoseSuccessRatio, HashMap<String, Integer> failedMessageCounts) {
+    private void showStatistics(String poseName, double selectedPoseSuccessRatio, HashMap<String,
+            Integer> failedMessageCounts) {
+        if (isAdded() && getContext() != null) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_pose_statistics, null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_pose_statistics,
+                null);
 
         TextView tvPoseName = dialogView.findViewById(R.id.tvPoseName);
         TextView tvSuccessRate = dialogView.findViewById(R.id.tvSuccessRate);
@@ -396,31 +352,30 @@ public class ProgressFragment extends Fragment {
         Button btnDismiss = dialogView.findViewById(R.id.btnDismiss);
 
         tvPoseName.setText(String.format(Locale.US, "Statistics for %s", poseName));
-        tvSuccessRate.setText(String.format(Locale.US, "Success Rate: %.2f%%", selectedPoseSuccessRatio * 100));
+        tvSuccessRate.setText(String.format(Locale.US, "Success Rate: %.2f%%",
+                selectedPoseSuccessRatio * 100));
 
         StringBuilder failedTipsMessage = new StringBuilder("Failed Tips:\n");
         if (failedMessageCounts != null && !failedMessageCounts.isEmpty()) {
             for (Map.Entry<String, Integer> entry : failedMessageCounts.entrySet()) {
-                failedTipsMessage.append(String.format(Locale.US, "%s: %d times\n", entry.getKey(), entry.getValue()));
+                failedTipsMessage.append(String.format(Locale.US, "%s: %d times\n",
+                        entry.getKey(), entry.getValue()));
             }
         } else {
             failedTipsMessage.append("No failed tips recorded.");
         }
         tvFailedTips.setText(failedTipsMessage.toString());
 
-//        StringBuilder comparativeRatesMessage = new StringBuilder("Comparative Success Rates:\n");
-//        for (Map.Entry<String, Double> entry : poseSuccessRatios.entrySet()) {
-//            if (!entry.getKey().equals(poseName)) {
-//                comparativeRatesMessage.append(String.format(Locale.US, "%s: %.2f%%\n", entry.getKey(), entry.getValue() * 100));
-//            }
-//        }
-//        tvComparativeRates.setText(comparativeRatesMessage.toString());
 
-        AlertDialog dialog = builder.setView(dialogView).create();  // Create the dialog here to use it inside the listener
+        AlertDialog dialog = builder.setView(dialogView).create();  // Create the dialog here
+            // to use it inside the listener
 
         btnDismiss.setOnClickListener(v -> dialog.dismiss());  // Use the dialog reference to dismiss
 
         dialog.show();
+        } else {
+            Log.e(TAG, "Fragment is not currently added to an activity or getContext() returned null.");
+        }
     }
 
 
@@ -444,7 +399,8 @@ public class ProgressFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         if (suggestedPose != null) {
             final String poseForButton = suggestedPose;
-            builder.setMessage("Based on your previous attempts we recommend you work on : " + suggestedPose)
+            builder.setMessage("Based on your previous attempts we recommend you work on : "
+                            + suggestedPose)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 
@@ -474,7 +430,8 @@ public class ProgressFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            dbRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+            dbRef = FirebaseDatabase.getInstance().getReference().child("users")
+                    .child(user.getUid());
             fetchUserGoal();
             fetchWeeklyPoseResults();
             //fetchAllPosesStatistics();
@@ -502,7 +459,8 @@ public class ProgressFragment extends Fragment {
                     poseNames.add(snapshot.getKey());
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, poseNames);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                        android.R.layout.simple_spinner_item, poseNames);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 poseSpinner.setAdapter(adapter);
 
@@ -626,7 +584,8 @@ public class ProgressFragment extends Fragment {
                         for (DataSnapshot yearSnapshot : poseSnapshot.getChildren()) {
                             for (DataSnapshot monthSnapshot : yearSnapshot.getChildren()) {
                                 for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
-                                    String dateStr = yearSnapshot.getKey() + "-" + monthSnapshot.getKey() + "-" + daySnapshot.getKey();
+                                    String dateStr = yearSnapshot.getKey() + "-"
+                                            + monthSnapshot.getKey() + "-" + daySnapshot.getKey();
                                     Date date;
                                     try {
                                         date = sdf.parse(dateStr);
@@ -639,15 +598,19 @@ public class ProgressFragment extends Fragment {
                                     cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                                     String weekStart = sdf.format(cal.getTime());
 
-                                    WeeklyPoseData data = weeklyResults.getOrDefault(weekStart, new WeeklyPoseData());
+                                    WeeklyPoseData data = weeklyResults.getOrDefault(weekStart,
+                                            new WeeklyPoseData());
 
                                     for (DataSnapshot resultSnapshot : daySnapshot.getChildren()) {
-                                        Boolean result = resultSnapshot.child("result").getValue(Boolean.class);
-                                        Long duration = resultSnapshot.child("durationMillis").getValue(Long.class);
+                                        Boolean result = resultSnapshot.child("result")
+                                                .getValue(Boolean.class);
+                                        Long duration = resultSnapshot.child("durationMillis")
+                                                .getValue(Long.class);
 
                                         if (duration == null) {
                                             //Handle case where duration is null
-                                            Log.e(TAG, "Duration is null for " + resultSnapshot.getKey());
+                                            Log.e(TAG, "Duration is null for " +
+                                                    resultSnapshot.getKey());
                                             continue;
                                         }
 
@@ -701,8 +664,10 @@ public class ProgressFragment extends Fragment {
             weeklyData.put("totalFailures", data.getFailureCount());
 
             weeklyTotalRef.setValue(weeklyData)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Weekly total saved successfully for " + weekStart))
-                    .addOnFailureListener(e -> Log.e(TAG, "Failed to save weekly total for " + weekStart, e));
+                    .addOnSuccessListener(aVoid -> Log.d(TAG,
+                            "Weekly total saved successfully for " + weekStart))
+                    .addOnFailureListener(e -> Log.e(TAG,
+                            "Failed to save weekly total for " + weekStart, e));
         }
     }
 
@@ -726,13 +691,15 @@ public class ProgressFragment extends Fragment {
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         String currentWeekStart = sdf.format(cal.getTime());
 
-        WeeklyPoseData currentWeekData = weeklyResults.getOrDefault(currentWeekStart, new WeeklyPoseData());
+        WeeklyPoseData currentWeekData = weeklyResults.getOrDefault(currentWeekStart,
+                new WeeklyPoseData());
         long totalDurationMillis = currentWeekData.getTotalDuration();
         int totalDurationMinutes = (int) (totalDurationMillis / 60000);  //convert milliseconds to minutes
 
         handler.post(() -> updateProgressBarAndText(totalDurationMinutes, totalGoalMinutes));
     }
-
+    // updateProgressBarAndText method updates the progress
+    // bar and text based on the total duration in minutes and the goal in minutes
     private void updateProgressBarAndText(int totalDurationMinutes, int goalMinutes) {
         View view = getView();
         if (view == null) {
@@ -758,9 +725,11 @@ public class ProgressFragment extends Fragment {
             timeSpent = String.format(Locale.getDefault(), "%d min", minutes);
         }
 
-        currentProgressText.setText(String.format(Locale.getDefault(), "Current Progress: %d%% (%s)", progressPercentage, timeSpent));
+        currentProgressText.setText(String.format(Locale.getDefault(),
+                "Current Progress: %d%% (%s)", progressPercentage, timeSpent));
     }
 
+    // fetchUserGoal method retrieves the user's goal from Firebase
     private void fetchUserGoal() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -785,7 +754,7 @@ public class ProgressFragment extends Fragment {
             });
         }
     }
-
+    // updateGoalText method updates the goal text based on the total goal minutes
     private void updateGoalText(int totalMinutes) {
         TextView goalTimeText = getView().findViewById(R.id.goalTimeText);
         goalTimeText.setText("Goal Time: " + totalMinutes + " mins");

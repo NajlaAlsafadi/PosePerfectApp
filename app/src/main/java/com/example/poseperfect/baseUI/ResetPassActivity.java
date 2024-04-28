@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.poseperfect.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ResetPassActivity extends AppCompatActivity {
@@ -37,6 +36,7 @@ public class ResetPassActivity extends AppCompatActivity {
         });
 
         Button resetPasswordButton = findViewById(R.id.reset_password);
+        // reset password using Firebase Authentication
         resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,7 +51,7 @@ public class ResetPassActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-
+                                        // clear the email field and navigate to success activity on success
                                         emailField.setText("");
                                         Intent intent = new Intent(ResetPassActivity.this, SuccessResetPassActivity.class);
                                         startActivity(intent);

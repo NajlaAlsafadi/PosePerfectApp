@@ -1,11 +1,5 @@
 package com.example.poseperfect;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.media.Image;
-import android.os.Handler;
-import android.os.Looper;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -40,7 +34,8 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
     private ExerciseActivity exerciseActivity;
     private String correctFeedback = "Pose is correct, Please Hold Form";
 
-    public PoseDetectorAnalyzer(String poseName, PoseOverlayView poseOverlayView, ExerciseActivity exerciseActivity) {
+    public PoseDetectorAnalyzer(String poseName, PoseOverlayView poseOverlayView,
+                                ExerciseActivity exerciseActivity) {
         this.poseName = poseName;
         this.poseOverlayView = poseOverlayView;
         this.exerciseActivity = exerciseActivity;
@@ -58,7 +53,8 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
             return;
         }
         isProcessing = true;
-        InputImage inputImage = InputImage.fromMediaImage(image.getImage(), image.getImageInfo().getRotationDegrees());
+        InputImage inputImage = InputImage.fromMediaImage(image.getImage(), image.getImageInfo()
+                .getRotationDegrees());
 
         Task<Pose> result =
                 poseDetector.process(inputImage)
@@ -81,7 +77,8 @@ public class PoseDetectorAnalyzer implements ImageAnalysis.Analyzer {
                                                 checkStandingStraightArmsOutPose(pose);
                                                 break;
                                         }
-                                        poseOverlayView.updatePose(pose, inputImage.getWidth(), inputImage.getHeight());
+                                        poseOverlayView.updatePose(pose, inputImage.getWidth(),
+                                                inputImage.getHeight());
                                         isProcessing = false;
                                         image.close();
                                     }
@@ -159,7 +156,8 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
                 PoseLandmark leftElbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW);
 
-                if (rightShoulder == null || leftShoulder == null || rightHip == null || leftHip == null || rightElbow == null || leftElbow == null) {
+                if (rightShoulder == null || leftShoulder == null || rightHip == null ||
+                        leftHip == null || rightElbow == null || leftElbow == null) {
                     return;
                 }
 
@@ -191,10 +189,10 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
 
                 List<String> incorrectFeedbacks = new ArrayList<>();
                 if (!isBodyStraight) {
-                    incorrectFeedbacks.add("Please keep your body straight");
+                    incorrectFeedbacks.add("Please keep your body straight up");
                 }
                 if (!areArmsOut) {
-                    incorrectFeedbacks.add("Please keep your arms out");
+                    incorrectFeedbacks.add("Please keep your arms straight out");
                 }
 
                 displayFeedback(isPoseCorrect, correctFeedback, incorrectFeedbacks.toArray(new String[0]));
@@ -205,8 +203,10 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 }
 
                 exerciseActivity.poseChecks.putBoolean("Outcome", isPoseCorrect);
-                exerciseActivity.feedbackMap.put("Check1", new Object[]{isBodyStraight, isBodyStraight ? "Body was Straight" : "Your body was not straight"});
-                exerciseActivity.feedbackMap.put("Check2", new Object[]{areArmsOut, areArmsOut ? "Arms were perpendicular to body" : "Your arms were not perpendicular to body"});
+                exerciseActivity.feedbackMap.put("Check1", new Object[]{isBodyStraight,
+                        isBodyStraight ? "Body was Straight" : "Your body was not straight"});
+                exerciseActivity.feedbackMap.put("Check2", new Object[]{areArmsOut,
+                        areArmsOut ? "Arms were perpendicular to body" : "Your arms were not perpendicular to body"});
             }
         }, 3000);
     }
@@ -235,7 +235,7 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 float bodyAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
                 Log.d("PoseCheck", "Right body angle before calculations: " + bodyAngle);
 
-                if (Math.abs(bodyAngle - 180) > 20) {
+                if (Math.abs(bodyAngle - 170) > 20) {
                     isPoseCorrect = false;
                     isBodyStraight = false;
                 }
@@ -245,7 +245,7 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 float legAngle = calculateAngle(rightHip, rightKnee, rightAnkle);
                 Log.d("PoseCheck", "Right leg angle before calculations: " + legAngle);
 
-                if (Math.abs(legAngle - 90) > 15) {
+                if (Math.abs(legAngle - 80) > 22) {
                     isPoseCorrect = false;
                     isLegBent = false;
                 }
@@ -269,8 +269,10 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                     exerciseActivity.speakFeedback(correctFeedback);
                 }
                 exerciseActivity.poseChecks.putBoolean("Outcome", isPoseCorrect);
-                exerciseActivity.feedbackMap.put("Check1", new Object[]{isBodyStraight, isBodyStraight ? "Body was Straight" : "Your body was not straight"});
-                exerciseActivity.feedbackMap.put("Check2", new Object[]{isLegBent, isLegBent ? "Leg was in Correct position" : "Your hips were not inline with knees"});
+                exerciseActivity.feedbackMap.put("Check1", new Object[]{isBodyStraight,
+                        isBodyStraight ? "Body was Straight" : "Your body was not straight"});
+                exerciseActivity.feedbackMap.put("Check2", new Object[]{isLegBent,
+                        isLegBent ? "Leg was in Correct position" : "Your hips were not inline with knees"});
             }
 
         }, 3000);
@@ -305,23 +307,25 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 //1.  Check if thighs are 45 degrees to the ground
                 float rightHipAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
                 Log.d("PoseCheck", "Right Hip before calculations: " + rightHipAngle);
-                if (Math.abs(rightHipAngle - 50) > 20) {
+                if (Math.abs(rightHipAngle - 50) > 40) {
                     isPoseCorrect = false;
                     isHipsAngleCorrect = false;
                 }
                 Log.d("PoseCheck", "Are hips at correct angle: " + isHipsAngleCorrect);
                 // 2. Check if legs are straight
                 float rightLegStraightness = calculateAngle(rightHip, rightKnee, rightAnkle);
-                Log.d("PoseCheck", "Right leg straightness before calculations:" + rightLegStraightness);
-                if (Math.abs(rightLegStraightness - 180) > 15) {
+                Log.d("PoseCheck", "Right leg straightness before calculations:" +
+                        rightLegStraightness);
+                if (Math.abs(rightLegStraightness - 170) > 20) {
                     isPoseCorrect = false;
                     isLegsStraight = false;
                 }
                 Log.d("PoseCheck", "Are legs straight: " + isLegsStraight);
                 // 3. Check if arms are 45 degrees to body
                 float armAngleWithGround = calculateAngle(rightWrist, rightShoulder, rightHip);
-                Log.d("PoseCheck", "armAngleWithGround before calculations:" + armAngleWithGround);
-                if (Math.abs(armAngleWithGround - 50) > 10) {
+                Log.d("PoseCheck", "armAngleWithGround before calculations:" +
+                        armAngleWithGround);
+                if (Math.abs(armAngleWithGround - 40) > 15) {
                     isPoseCorrect = false;
                     isArmsParallelToGround = false;
                 }
@@ -343,9 +347,15 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                     exerciseActivity.speakFeedback(correctFeedback);
                 }
                 exerciseActivity.poseChecks.putBoolean("Outcome", isPoseCorrect);
-                exerciseActivity.feedbackMap.put("Check1", new Object[]{isHipsAngleCorrect, isHipsAngleCorrect ? "Legs were lifted high enough" : "Legs were not lifted high enough"});
-                exerciseActivity.feedbackMap.put("Check2", new Object[]{isLegsStraight, isLegsStraight ? "Legs were straight" : "Legs were not straight"});
-                exerciseActivity.feedbackMap.put("Check3", new Object[]{isArmsParallelToGround, isArmsParallelToGround ? "Arms were parallel to ground" : "Arms were not parallel to ground"});
+
+                exerciseActivity.feedbackMap.put("Check1", new Object[]{isHipsAngleCorrect,
+                        isHipsAngleCorrect ? "Legs were lifted high enough" : "Legs were not lifted high enough"});
+
+                exerciseActivity.feedbackMap.put("Check2", new Object[]{isLegsStraight,
+                        isLegsStraight ? "Legs were straight" : "Legs were not straight"});
+
+                exerciseActivity.feedbackMap.put("Check3", new Object[]{isArmsParallelToGround,
+                        isArmsParallelToGround ? "Arms were parallel to ground" : "Arms were not parallel to ground"});
             }
         }, 3000);
     }
@@ -379,7 +389,7 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 // 1. Check if front knee is bent correctly
                 float frontKneeAngle = calculateAngle(rightAnkle, rightKnee, rightHip);
                 Log.d("PoseCheck", "Initial front knee angle: " + frontKneeAngle);
-                if (Math.abs(frontKneeAngle - 110) > 10) {
+                if (Math.abs(frontKneeAngle - 107) > 15) {
                     isPoseCorrect = false;
                     isFrontKneeBentCorrectly = false;
                 }
@@ -388,7 +398,7 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 // 2. Check if back leg is straight
                 float backLegAngle = calculateAngle(leftHip, leftKnee, leftAnkle);
                 Log.d("PoseCheck", "Initial back leg angle: " + backLegAngle);
-                if (Math.abs(backLegAngle - 180) > 10) {
+                if (Math.abs(backLegAngle - 180) > 15) {
                     isPoseCorrect = false;
                     isBackLegStraight = false;
                 }
@@ -397,7 +407,7 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 // 3. Check if arms are correctly straight
                 float armsAngle = calculateAngle(leftShoulder, rightShoulder, rightElbow);
                 Log.d("PoseCheck", "Initial arms angle: " + armsAngle);
-                if (Math.abs(armsAngle - 180) > 15) {
+                if (Math.abs(armsAngle - 180) > 20) {
                     isPoseCorrect = false;
                     isArmsCorrectlyPositioned = false;
                 }
@@ -406,16 +416,17 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                 // 4. Check if body is in correct position
                 float bodyAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
                 Log.d("PoseCheck", "Initial body angle: " + bodyAngle);
-                if (Math.abs(bodyAngle - 90) > 12) {
+                if (Math.abs(bodyAngle - 90) > 15) {
                     isPoseCorrect = false;
                     isBodyCorrectlyPositioned = false;
                 }
-                Log.d("PoseCheck", "Is body correctly positioned: " + isBodyCorrectlyPositioned);
+                Log.d("PoseCheck", "Is body correctly positioned: " +
+                        isBodyCorrectlyPositioned);
 
 
                 List<String> incorrectFeedbacks = new ArrayList<>();
                 if (!isFrontKneeBentCorrectly) {
-                    incorrectFeedbacks.add("Front Knee is not bent enough");
+                    incorrectFeedbacks.add("Front Knee is not bent at 90 degrees");
                 }
                 if (!isBackLegStraight) {
                     incorrectFeedbacks.add("Keep back leg straight");
@@ -424,7 +435,7 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                     incorrectFeedbacks.add("Keep arms straight out");
                 }
                     if (!isBodyCorrectlyPositioned) {
-                        incorrectFeedbacks.add("Keep body straight");
+                        incorrectFeedbacks.add("Keep body straight up");
                     }
                 displayFeedback(isPoseCorrect, correctFeedback, incorrectFeedbacks.toArray(new String[0]));
 
@@ -433,10 +444,17 @@ private void displayFeedback(boolean isPoseCorrect, String correctFeedback, Stri
                     exerciseActivity.speakFeedback(correctFeedback);
                 }
                 exerciseActivity.poseChecks.putBoolean("Outcome", isPoseCorrect);
-                exerciseActivity.feedbackMap.put("Check1", new Object[]{isFrontKneeBentCorrectly, isFrontKneeBentCorrectly ? "Front Knee was at correct angle" : "Front Knee was not at correct angle"});
-                exerciseActivity.feedbackMap.put("Check2", new Object[]{isBackLegStraight, isBackLegStraight ? "Back leg was straight" : "Bck leg was not straight"});
-                exerciseActivity.feedbackMap.put("Check3", new Object[]{isArmsCorrectlyPositioned, isArmsCorrectlyPositioned ? "Arms were parallel to the ground" : "Arms were not parallel to the ground"});
-                exerciseActivity.feedbackMap.put("Check4", new Object[]{isBodyCorrectlyPositioned, isBodyCorrectlyPositioned ? "Torso was in correct position" : "Torso was not upright"});
+                exerciseActivity.feedbackMap.put("Check1", new Object[]{isFrontKneeBentCorrectly,
+                        isFrontKneeBentCorrectly ? "Front Knee was at correct angle" : "Front Knee was not at correct angle"});
+
+                exerciseActivity.feedbackMap.put("Check2", new Object[]{isBackLegStraight,
+                        isBackLegStraight ? "Back leg was straight" : "Back leg was not straight"});
+
+                exerciseActivity.feedbackMap.put("Check3", new Object[]{isArmsCorrectlyPositioned,
+                        isArmsCorrectlyPositioned ?   "Arms were straight" : "Arms were not straight"});
+
+                exerciseActivity.feedbackMap.put("Check4", new Object[]{isBodyCorrectlyPositioned,
+                        isBodyCorrectlyPositioned ? "Torso was in correct position" : "Torso was not upright"});
 
             }
         }, 3000);

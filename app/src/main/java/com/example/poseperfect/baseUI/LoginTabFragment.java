@@ -36,6 +36,7 @@ public class LoginTabFragment extends Fragment {
     float v=0;
 
 
+    // animation setup to make ui elements appear with delay
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.login_tab_fragment, container, false);
@@ -59,7 +60,7 @@ public class LoginTabFragment extends Fragment {
         login.setAlpha(v);
 
 
-
+        // animate appearance of login ui elements
         email.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(300).start();
         password.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(500).start();
         forgetPass.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(500).start();
@@ -77,6 +78,8 @@ public class LoginTabFragment extends Fragment {
                 }
             }
         });
+
+        // toggle password visibility
         showPass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -88,6 +91,7 @@ public class LoginTabFragment extends Fragment {
                 }
             }
         });
+        // handle forget password text click
         forgetPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,6 +103,7 @@ public class LoginTabFragment extends Fragment {
 
         return root;
     }
+    // login user with firebase auth
     private void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {

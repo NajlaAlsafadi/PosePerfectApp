@@ -49,7 +49,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         notifyDataSetChanged();
     }
     @NonNull
-    @Override
+    @Override// viewholder for individual exercise items
     public ExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_exercise, parent, false);
         return new ExerciseViewHolder(view, listener, longClickListener);
@@ -60,7 +60,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         holder.bind(exerciseList.get(position));
     }
 
-    @Override
+    @Override // get count of exercise items
     public int getItemCount() {
         return exerciseList.size();
     }
@@ -82,7 +82,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             this.listener = listener;
             this.longClickListener = longClickListener;
         }
-
+        // bind data to the views in the layout
         public void bind(final Exercise exercise) {
             nameTextView.setText(exercise.getName());
             categoryTextView.setText("Category: " + exercise.getCategory());

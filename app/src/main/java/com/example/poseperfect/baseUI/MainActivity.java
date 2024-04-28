@@ -9,31 +9,19 @@ import android.util.TypedValue;
 import android.view.View;
 
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.poseperfect.R;
-import com.google.android.material.tabs.TabLayout;
-
-import me.relex.circleindicator.CircleIndicator;
 import me.relex.circleindicator.CircleIndicator3;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView appLogo;
-    TextView welcomeText;
-
-    ProgressBar progressBar;
     CircleIndicator3 indicator;
     ViewPager2 viewPager;
-    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         Button nextButton = findViewById(R.id.nextButton);
         viewPager = findViewById(R.id.viewPager);
         indicator = findViewById(R.id.pageIndicator);
-
+        // create notification channel for app notifications
         createNotificationChannel();
 
         ScreenSlidePagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(this);
@@ -50,9 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         indicator.setViewPager(viewPager);
+        // connect indicator with viewpager
         pagerAdapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
 
-
+        // add item decoration to viewpager for spacing between items
         viewPager.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -65,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
+        // handle next button click to navigate to the login activity
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    // creates a notification channel if SDK version is Oreo or higher
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);

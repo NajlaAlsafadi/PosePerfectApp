@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.concurrent.Executor;
 
 public class SignupTabFragment  extends Fragment {
     EditText email;
@@ -62,7 +61,7 @@ public class SignupTabFragment  extends Fragment {
         signup.setAlpha(v);
 
 
-
+        // Animate elements to appear sequentially
         email.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(300).start();
 
         username.animate().translationX(0).alpha(1).setDuration(800).setStartDelay(500).start();
@@ -138,6 +137,7 @@ private void signupUser(String email, String password, String username) {
                 }
             });
 }
+    // method to determine if the password is strong
     private String isPasswordStrong(String password) {
         if (password.length() < 8) {
             return "Password needs to be at least 8 characters.";

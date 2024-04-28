@@ -15,7 +15,7 @@ public class LoginAdapter extends FragmentPagerAdapter {
      this.context = context;
      this.totalTabs = totalTabs;
     }
-
+    // get fragment based on position
     public Fragment getItem(int position){
         switch (position){
             case 0:
@@ -29,7 +29,7 @@ public class LoginAdapter extends FragmentPagerAdapter {
 
         }
     }
-
+    // get total tabs
     @Override
     public int getCount() {
         return totalTabs;

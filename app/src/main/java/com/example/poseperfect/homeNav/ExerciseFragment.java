@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,18 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.poseperfect.ExerciseActivity;
-import com.example.poseperfect.PoseAnalysisCallback;
-import com.example.poseperfect.PoseDetectorAnalyzer;
+
 import com.example.poseperfect.R;
 import com.example.poseperfect.StaticImagePoseAnalyzer;
-import com.example.poseperfect.overlay.PoseOverlayView;
 import com.google.android.material.chip.ChipGroup;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.pose.PoseDetection;
-import com.google.mlkit.vision.pose.PoseDetector;
-import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
-
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,7 +31,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
     private ExerciseAdapter exerciseAdapter;
     public static final String POSE_NAME = "pose_name";
     private static final int REQUEST_CHOOSE_IMAGE = 1002;
-    private String currentPoseName;
+    private String currentPoseName; // currently selected pose name
     private List<Exercise> exercises;
 
 
@@ -50,7 +41,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
         View view = inflater.inflate(R.layout.fragment_exercise, container, false);
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        // creating a list of exercises
         exercises = Arrays.asList(
                 new Exercise("T-Pose", getResources().getString(R.string.T_Pose_desc), getResources().getString(R.string.T_Pose_health), R.drawable.t_pose, "Beginner", "Standing", "https://youtu.be/ToXlJxuFLmU?si=vESk5CNaoA4bcWcU"),
                 new Exercise("Bridge", getResources().getString(R.string.Bridge_desc), getResources().getString(R.string.Bridge_health), R.drawable.bridge, "Intermediate", "Supine / Backbend", "https://youtu.be/XUcAuYd7VU0?si=dOrUm-HD20ST8FrQ"),
@@ -67,7 +58,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
                 startActivity(intent);
             }
         }, new ExerciseAdapter.OnItemLongClickListener() {
-            @Override
+            @Override // shows a dialog when an item is long clicked
             public void onItemLongClick(Exercise item) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 currentPoseName = item.getName();
@@ -98,7 +89,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
                 dialog.show();
             }
         });
-
+        // setting the adapter for the recycler view
         recyclerView.setAdapter(exerciseAdapter);
         ChipGroup chipGroup = view.findViewById(R.id.chip_group);
         chipGroup.setOnCheckedChangeListener(this);
@@ -106,7 +97,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
         return view;
     }
 
-    @Override
+    @Override // handles the result of an activity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CHOOSE_IMAGE && resultCode == getActivity().RESULT_OK) {
@@ -115,11 +106,13 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
 
         }
     }
+    // starts the intent to choose an image
     private void startChooseImageIntentForResult() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CHOOSE_IMAGE);
     }
+    // handles the result of the image selection
     private void handleImageResult(Uri imageUri) {
         StaticImagePoseAnalyzer analyzer = new StaticImagePoseAnalyzer(getContext());
 
@@ -128,18 +121,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
 
     }
 
-
-
-
-    private void showResultDialog(boolean isPoseCorrect, String feedback) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(isPoseCorrect ? "Pose Correct" : "Pose Incorrect");
-        builder.setMessage(feedback);
-        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-    @Override
+    @Override   // handles the event when a chip is checked
     public void onCheckedChanged(ChipGroup group, int checkedId) {
         if (checkedId == R.id.chip_all) {
             exerciseAdapter.filter("All");
@@ -149,6 +131,7 @@ public class ExerciseFragment extends Fragment implements ChipGroup.OnCheckedCha
             exerciseAdapter.filter("Intermediate");
         }
     }
+    // shows a scrollable dialog
     private void showScrollableDialog(String title, String content) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(title);

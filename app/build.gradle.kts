@@ -65,7 +65,7 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation ("com.github.transferwise:sequence-layout:1.2.0")
-
+    testImplementation ("org.mockito:mockito-core:4.0.0")
 
 
 }

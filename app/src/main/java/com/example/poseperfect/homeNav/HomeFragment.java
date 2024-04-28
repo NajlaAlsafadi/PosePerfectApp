@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
         setUsername();
         return view;
     }
-
+    // PagerAdapter class for the ViewPager
     private class InstructionPagerAdapter extends PagerAdapter {
         private int[] layouts = {
                 R.layout.instructions_1,
@@ -162,7 +162,8 @@ public class HomeFragment extends Fragment {
             container.removeView(view);
         }
     }
-    private void loadImage() {
+    // method to load the user's profile image
+    private void loadImage() {   // if the user exists, get the user's image URL and load it into the ImageView
         if (user != null) {
             String uid = user.getUid();
             databaseReference.child("users").child(uid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -188,6 +189,7 @@ public class HomeFragment extends Fragment {
         intent.setData(Uri.parse(url));
         startActivity(intent);
     }
+    // method to set the username
     private void setUsername() {
         if (user != null) {
             String uid = user.getUid();
