@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +25,6 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.poseperfect.PostPoseActivity;
 import com.example.poseperfect.homeNav.ExerciseFragment;
 import com.example.poseperfect.overlay.PoseOverlayView;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -155,19 +153,24 @@ public class ExerciseActivity extends AppCompatActivity {
     }
 
     private void checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 10);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+                    10);
         } else {
             startCamera();
         }
     }
     public void switchCamera() {
-        Log.d("ExerciseActivity", "Current camera after switch: " + (currentCameraSelector == frontCameraSelector ? "Front" : "Back"));
+        Log.d("ExerciseActivity", "Current camera after switch: " +
+                (currentCameraSelector == frontCameraSelector ? "Front" : "Back"));
         if (currentCameraSelector.equals(backCameraSelector)) {
             currentCameraSelector = frontCameraSelector;
+            poseOverlayView.setUsingFrontCamera(true);
             Log.d("ExerciseActivity", "Switching to front camera");
         } else {
             currentCameraSelector = backCameraSelector;
+            poseOverlayView.setUsingFrontCamera(false);
             Log.d("ExerciseActivity", "Switching to back camera");
         }
         try {
@@ -182,7 +185,8 @@ public class ExerciseActivity extends AppCompatActivity {
 
 
     private void startCamera() {
-        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider
+                .getInstance(this);
         cameraProviderFuture.addListener(() -> {
             try {
                 cameraProvider = cameraProviderFuture.get();
@@ -211,7 +215,9 @@ public class ExerciseActivity extends AppCompatActivity {
             imageAnalysis.setAnalyzer(cameraExecutor, poseDetectorAnalyzer);
 
             //use the currentCameraSelector here instead of creating a new CameraSelector
-            cameraProvider.bindToLifecycle(this, currentCameraSelector, preview, imageAnalysis);
+            cameraProvider.bindToLifecycle(this, currentCameraSelector, preview,
+                    imageAnalysis);
+            poseOverlayView.setUsingFrontCamera(currentCameraSelector == frontCameraSelector);
         }
     }
 
@@ -223,7 +229,8 @@ public class ExerciseActivity extends AppCompatActivity {
             if (textToSpeech.isSpeaking()) {
                 textToSpeech.stop(); // Ensure no concurrent speech conflict
             }
-            textToSpeech.speak(feedback, TextToSpeech.QUEUE_FLUSH, null, null); //QUEUE_FLUSH to clear the previous queue
+            textToSpeech.speak(feedback, TextToSpeech.QUEUE_FLUSH, null, null);
+            //QUEUE_FLUSH to clear the previous queue
             lastFeedback = feedback;
             lastFeedbackTime = currentTime;
         }
@@ -258,12 +265,15 @@ public class ExerciseActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 10 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == 10 && grantResults.length > 0 && grantResults[0] == PackageManager
+                .PERMISSION_GRANTED) {
             startCamera();
         } else {
-            Toast.makeText(this, "Camera permission is required to use this feature", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Camera permission is required to use this feature",
+                    Toast.LENGTH_SHORT).show();
             finish();
         }
     }

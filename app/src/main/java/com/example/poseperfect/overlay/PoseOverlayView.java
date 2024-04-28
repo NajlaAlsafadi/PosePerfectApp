@@ -20,7 +20,7 @@ public class PoseOverlayView extends View {
     private Paint linePaint;
     private int imageWidth;
     private int imageHeight;
-
+    private boolean isUsingFrontCamera = false;
     public PoseOverlayView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initPaint();
@@ -39,9 +39,14 @@ public class PoseOverlayView extends View {
         this.imageHeight = imageHeight;
         invalidate();
     }
-    private float calculateAspectRatioFit(float sourceWidth, float sourceHeight, float destWidth, float destHeight) {
+    private float calculateAspectRatioFit(float sourceWidth, float sourceHeight, float destWidth,
+                                          float destHeight) {
         float ratio = Math.min(destWidth / sourceWidth, destHeight / sourceHeight);
         return ratio;
+    }
+    public void setUsingFrontCamera(boolean isUsingFrontCamera) {
+        this.isUsingFrontCamera = isUsingFrontCamera;
+        invalidate();  // Redraw the view with the new setting
     }
 
     @Override
@@ -61,31 +66,46 @@ public class PoseOverlayView extends View {
         float offsetX = (getWidth() - (poseWidth * ratio)) / 2 - (poseBounds.left * ratio);
         float offsetY = (getHeight() - (poseHeight * ratio)) / 2 - (poseBounds.top * ratio);
 
-
+        // If using the front camera, flip the canvas horizontally
+        if (isUsingFrontCamera) {
+            canvas.scale(-1f, 1f, getWidth() / 2f, getHeight() / 2f);
+        }
 
         List<PoseLandmark> landmarks = pose.getAllPoseLandmarks();
         if (!landmarks.isEmpty()) {
-
-            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.RIGHT_SHOULDER, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.LEFT_HIP, PoseLandmark.RIGHT_HIP, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_HIP, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_HIP, ratio, offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.RIGHT_SHOULDER, ratio,
+                    offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.LEFT_HIP, PoseLandmark.RIGHT_HIP, ratio,
+                    offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_HIP, ratio,
+                    offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_HIP, ratio,
+                    offsetX, offsetY);
 
             // Left arm
-            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_ELBOW, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.LEFT_ELBOW, PoseLandmark.LEFT_WRIST, ratio, offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_ELBOW, ratio,
+                    offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.LEFT_ELBOW, PoseLandmark.LEFT_WRIST, ratio,
+                    offsetX, offsetY);
 
             // Right arm
-            drawLine(canvas, pose, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_ELBOW, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.RIGHT_ELBOW, PoseLandmark.RIGHT_WRIST, ratio, offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_ELBOW, ratio,
+                    offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_ELBOW, PoseLandmark.RIGHT_WRIST, ratio,
+                    offsetX, offsetY);
 
             // Body To Legs
-            drawLine(canvas, pose, PoseLandmark.LEFT_HIP, PoseLandmark.LEFT_KNEE, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.LEFT_KNEE, PoseLandmark.LEFT_ANKLE, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.RIGHT_HIP, PoseLandmark.RIGHT_KNEE, ratio, offsetX, offsetY);
-            drawLine(canvas, pose, PoseLandmark.RIGHT_KNEE, PoseLandmark.RIGHT_ANKLE, ratio, offsetX, offsetY);
+            drawLine(canvas, pose, PoseLandmark.LEFT_HIP, PoseLandmark.LEFT_KNEE, ratio, offsetX,
+                    offsetY);
+            drawLine(canvas, pose, PoseLandmark.LEFT_KNEE, PoseLandmark.LEFT_ANKLE, ratio, offsetX,
+                    offsetY);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_HIP, PoseLandmark.RIGHT_KNEE, ratio, offsetX,
+                    offsetY);
+            drawLine(canvas, pose, PoseLandmark.RIGHT_KNEE, PoseLandmark.RIGHT_ANKLE, ratio, offsetX,
+                    offsetY);
         }
     }
+
     private RectF calculatePoseBoundingBox(Pose pose) {
         float minX = Float.MAX_VALUE;
         float minY = Float.MAX_VALUE;
@@ -101,7 +121,8 @@ public class PoseOverlayView extends View {
 
         return new RectF(minX, minY, maxX, maxY);
     }
-    private void drawLine(Canvas canvas, Pose pose, int startLandmarkId, int endLandmarkId, float scale, float offsetX, float offsetY) {
+    private void drawLine(Canvas canvas, Pose pose, int startLandmarkId, int endLandmarkId,
+                          float scale, float offsetX, float offsetY) {
         PoseLandmark startLandmark = pose.getPoseLandmark(startLandmarkId);
         PoseLandmark endLandmark = pose.getPoseLandmark(endLandmarkId);
 

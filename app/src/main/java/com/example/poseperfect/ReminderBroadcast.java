@@ -17,7 +17,8 @@ public class ReminderBroadcast extends BroadcastReceiver {
     @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "YogaReminder")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
+                "YogaReminder")
                 .setSmallIcon(R.drawable.ic_exercises)
                 .setContentTitle("Time To Practice Yoga!")
                 .setContentText("You set this reminder for PosePerfect")

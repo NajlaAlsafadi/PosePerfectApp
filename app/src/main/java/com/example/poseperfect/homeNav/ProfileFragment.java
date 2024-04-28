@@ -78,11 +78,13 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-
+        // set on checked change listener for storage permission switch
         storagePermissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                  //  if switch is checked and permission is not granted, request the permission
+                    // if switch is unchecked, show permission revoke dialog
                     if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
                     }
@@ -108,6 +110,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
+        // find profile image view by its id and set on long click listener
         profileImageView = view.findViewById(R.id.profile);
         profileImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

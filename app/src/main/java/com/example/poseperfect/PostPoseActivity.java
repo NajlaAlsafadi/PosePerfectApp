@@ -5,13 +5,12 @@ import static androidx.constraintlayout.widget.StateSet.TAG;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,17 +25,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
-import com.transferwise.sequencelayout.SequenceStep;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,7 +56,8 @@ public class PostPoseActivity extends AppCompatActivity {
         posename = findViewById(R.id.posename);
         dateTextView = findViewById(R.id.textViewDate);
 
-        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                .format(new Date());
         dateTextView.setText(currentDate);
 
         long poseDuration = getIntent().getLongExtra("POSE_DURATION", 0);
@@ -70,12 +66,14 @@ public class PostPoseActivity extends AppCompatActivity {
         Bundle poseChecks = getIntent().getBundleExtra("pose_checks");
 
         if (poseChecks.containsKey("Outcome")) {
-            outcome.setText("Overall Pose Outcome: " + (poseChecks.getBoolean("Outcome") ? "Passed" : "Failed"));
+            outcome.setText("Overall Pose Outcome: " + (poseChecks.getBoolean(
+                    "Outcome") ? "Passed" : "Failed"));
 
         }
 
         Bundle analysisResults = getIntent().getBundleExtra("analysisResults");
-        HashMap<String, Object[]> feedbackMap = (HashMap<String, Object[]>) getIntent().getSerializableExtra("FeedbackMap");
+        HashMap<String, Object[]> feedbackMap = (HashMap<String, Object[]>) getIntent()
+                .getSerializableExtra("FeedbackMap");
         List<CheckResult> results = new ArrayList<>();
         for (Map.Entry<String, Object[]> entry : feedbackMap.entrySet()) {
             Object[] feedback = entry.getValue();
@@ -104,7 +102,8 @@ public class PostPoseActivity extends AppCompatActivity {
     private List<String> getFailedResultsWithMessages() {
         List<String> failedResults = new ArrayList<>();
 
-        HashMap<String, Object[]> feedbackMap = (HashMap<String, Object[]>) getIntent().getSerializableExtra("FeedbackMap");
+        HashMap<String, Object[]> feedbackMap = (HashMap<String, Object[]>) getIntent()
+                .getSerializableExtra("FeedbackMap");
 
         if (feedbackMap != null) {
             for (Map.Entry<String, Object[]> entry : feedbackMap.entrySet()) {
@@ -123,24 +122,28 @@ public class PostPoseActivity extends AppCompatActivity {
 
     private void saveResultsAsImage() {
         View content = findViewById(R.id.postPose);
-        Bitmap bitmap = Bitmap.createBitmap(content.getWidth(), content.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(content.getWidth(), content.getHeight(),
+                Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         content.draw(canvas);
         content.setBackgroundColor(Color.WHITE);
         content.draw(canvas);
         content.setBackgroundColor(0);
         String fileName = "PoseResults_" + System.currentTimeMillis() + ".png";
-        File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+        File imagePath = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), fileName);
         FileOutputStream fos;
         try {
             fos = new FileOutputStream(imagePath);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
             fos.close();
-            Toast.makeText(this, "Results saved to " + imagePath.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Results saved to " + imagePath.getAbsolutePath(),
+                    Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Error saving image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error saving image: " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -148,8 +151,10 @@ public class PostPoseActivity extends AppCompatActivity {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-                String entryId = new SimpleDateFormat("yyyy/MM/dd/HH:mm", Locale.getDefault()).format(new Date());
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                        .format(new Date());
+                String entryId = new SimpleDateFormat("yyyy/MM/dd/HH:mm", Locale.getDefault())
+                        .format(new Date());
                 DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
                         .child("users")
                         .child(currentUser.getUid())
