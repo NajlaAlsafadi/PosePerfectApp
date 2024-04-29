@@ -219,7 +219,7 @@ public class ProgressFragment extends Fragment {
 
         for (String day : reminderDays) {
             int dayOfWeek = getDayOfWeekInt(day);
-            Calendar alarmTime = getNextAlarmTime(dayOfWeek, 16, 50); // Set for 6 PM
+            Calendar alarmTime = getNextAlarmTime(dayOfWeek, 10, 10); // Set for 6 PM
 
             Intent intent = new Intent(getContext(), ReminderBroadcast.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), dayOfWeek,
@@ -694,13 +694,13 @@ public class ProgressFragment extends Fragment {
         WeeklyPoseData currentWeekData = weeklyResults.getOrDefault(currentWeekStart,
                 new WeeklyPoseData());
         long totalDurationMillis = currentWeekData.getTotalDuration();
-        int totalDurationMinutes = (int) (totalDurationMillis / 60000);  //convert milliseconds to minutes
+        int totalDurationSeconds = (int) (totalDurationMillis / 1000);  //convert milliseconds to seconds
 
-        handler.post(() -> updateProgressBarAndText(totalDurationMinutes, totalGoalMinutes));
+        handler.post(() -> updateProgressBarAndText(totalDurationSeconds, totalGoalMinutes));
     }
     // updateProgressBarAndText method updates the progress
     // bar and text based on the total duration in minutes and the goal in minutes
-    private void updateProgressBarAndText(int totalDurationMinutes, int goalMinutes) {
+    private void updateProgressBarAndText(int totalDurationSeconds, int goalMinutes) {
         View view = getView();
         if (view == null) {
             Log.e(TAG, "View is not available.");
@@ -709,25 +709,26 @@ public class ProgressFragment extends Fragment {
         ProgressBar progressBar = view.findViewById(R.id.goalProgressBar);
         TextView currentProgressText = view.findViewById(R.id.currentProgressText);
 
-        int progressPercentage = (int) ((totalDurationMinutes / (float) goalMinutes) * 100);
+        int goalSeconds = goalMinutes * 60;
+        int progressPercentage = (int) ((totalDurationSeconds / (float) goalSeconds) * 100);
         progressBar.setProgress(Math.min(progressPercentage, 100));  // Ensure not exceeding 100%
 
-        // Calculate hours and minutes from totalDurationMinutes
-        int hours = totalDurationMinutes / 60;
-        int minutes = totalDurationMinutes % 60;
+        // calculate hours, minutes, and seconds from totalDurationSeconds
+        int hours = totalDurationSeconds / 3600;
+        int minutes = (totalDurationSeconds % 3600) / 60;
+        int seconds = totalDurationSeconds % 60;
 
         String timeSpent;
         if (hours > 0) {
-            // Format time spent as hours and minutes if hours are present
-            timeSpent = String.format(Locale.getDefault(), "%d hr %02d min", hours, minutes);
+            timeSpent = String.format(Locale.getDefault(), "%d hr %02d min %02d sec", hours, minutes, seconds);
         } else {
-            // Format time spent as minutes only if less than an hour
-            timeSpent = String.format(Locale.getDefault(), "%d min", minutes);
+            timeSpent = String.format(Locale.getDefault(), "%02d min %02d sec", minutes, seconds);
         }
 
         currentProgressText.setText(String.format(Locale.getDefault(),
                 "Current Progress: %d%% (%s)", progressPercentage, timeSpent));
     }
+
 
     // fetchUserGoal method retrieves the user's goal from Firebase
     private void fetchUserGoal() {
