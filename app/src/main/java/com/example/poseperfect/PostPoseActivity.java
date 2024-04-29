@@ -153,9 +153,9 @@ public class PostPoseActivity extends AppCompatActivity {
 
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
                         .format(new Date());
-                String entryId = new SimpleDateFormat("yyyy/MM/dd/HH:mm", Locale.getDefault())
-                        .format(new Date());
-                DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
+            String entryId = new SimpleDateFormat("yyyy/MM/dd/HH:mm:ss", Locale.getDefault())
+                    .format(new Date());
+            DatabaseReference userDbRef = FirebaseDatabase.getInstance().getReference()
                         .child("users")
                         .child(currentUser.getUid())
                         .child("PoseResult")
